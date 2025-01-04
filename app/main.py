@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends
-# from frontend_files import *
-from fastapi.responses import HTMLResponse
-from typing import Annotated
+from fastapi import FastAPI
+from routers.pages import router as pages_router
 from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
 
-app.mount("/", StaticFiles(directory="frontend_files", html=True), name="/")
+app.include_router(pages_router)
+
+app.mount("/", StaticFiles(directory="static_files"), name="static")
