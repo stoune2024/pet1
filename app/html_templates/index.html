@@ -20,9 +20,9 @@
 		<nav>
 			<ul>
 				<li><a href="{{ url_for('get_barsik_page') }}">О Барсике</a></li>
-				<li><a href='marsik_page/marsik.html'>О Марсике</a></li>
-				<li><a href='тут будет url_for метод'>Для авторизованных</a></li>
-				<li><a href='тут будет url_for метод'>Войти в систему</a></li>
+				<li><a href="{{ url_for('get_marsik_page') }}">О Марсике</a></li>
+				<li><a href="{{ url_for('get_bonus_page') }}">Для авторизованных</a></li>
+				<li><a href="{{ url_for('get_oauth_page') }}">Войти в систему</a></li>
 			</ul>
 		</nav>
 		<main>
