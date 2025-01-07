@@ -116,8 +116,14 @@ figure {
 	display:flex;
 	flex-flow:column;
 	padding:5px;
-	float:left;
+	/* float:left; */
 	border:1px dashed orange;
+}
+
+.flexed {
+	display:flex;
+	align-items:center;
+	justify-content: space-around;
 }
 
 img {

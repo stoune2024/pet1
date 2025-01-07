@@ -1,90 +1,68 @@
 <!doctype html>
 <html lang='ru'>
-  <head>
-    <meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width"/>
-	<meta name='author' content='Maxim Chubarov'/>
-	<meta name='description' content='У меня есть два кота - Марсик и Барсик. Барсику 14 лет, а Марсику 7 месяцев. Вот так вот.'/>
-    <title>Мои коты</title>
-	<link rel='shortcut icon' href='my_icon.jpg' type='image/x-icon' />
-	<link 
-	href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
-	rel='stylesheer'
-	type='text/css'/>
-	<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
-  </head>
-  <body>
-	<header>
-		<h1> Барсик и Марсик </h1>
-	</header>
-	<nav>
-		<ul>
-		<li><a href='navigation menu pages/homepage.html'>homepage</a></li>
-		<li><a href='navigation menu pages/pictures.html'>pictures</a></li>
-		<li><a href='navigation menu pages/projects.html'>projects</a></li>
-		<li><a href='navigation menu pages/social.html'>social</a></li>
-		</ul>
-		<form>
-        <input type="search" name="q" placeholder="Search query" />
-        <input type="submit" value="Go!" />
-		</form>
-	</nav>
-	<main>
-		<article>
-			<h2> Статья про Марсика и Барсика </h2>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width"/>
+		<meta name='author' content='Maxim Chubarov'/>
+		<meta name='description' content='У меня есть два кота - Марсик и Барсик. Барсику 14 лет, а Марсику 7 месяцев. Вот так вот.'/>
+		<title>Мои коты</title>
+		<link rel='shortcut icon' href="{{ url_for('static', path='/my_icon.jpg') }}" type='image/x-icon' />
+		<link 
+		href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
+		rel='stylesheer'
+		type='text/css'/>
+		<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
+	</head>
+	<body>
+		<header>
+			<h1> Барсик и Марсик </h1>
+		</header>
+		<nav>
+			<ul>
+				<li><a href="{{ url_for('get_barsik_page') }}">О Барсике</a></li>
+				<li><a href='marsik_page/marsik.html'>О Марсике</a></li>
+				<li><a href='тут будет url_for метод'>Для авторизованных</a></li>
+				<li><a href='тут будет url_for метод'>Войти в систему</a></li>
+			</ul>
+		</nav>
+		<main>
+			<article>
+				<h2> Статья про Марсика и Барсика </h2>
 				<figure>
-					<img title='на фото Барсик лижет Марсика против шерсти)' src='my_cats.jpg'/>
+					<img title='Барсик лижет Марсика против шерсти' src="{{ url_for('static', path='/my_web_cats.jpg') }}"/>
 					<figcaption>
 						на фото Барсик лижет Марсика против шерсти)
 					</figcaption>
 				</figure>
-				<p>Эта веб-страница про Марсика и Барсика. Они оба <strong>очень</strong> глупы.
-				Однако это не мешает им жить. Вот на фото внизу Барсик лижет Марсика <em>против шерсти</em></p>
+				<p>Этот веб-сайт для моего full-stack pet-проекта нужно было чем то наполнить.
+				Поэтому я не предумал ничего лучше, кроме как представить Вам своих котов.</p>
+				<p> Эта веб-страница про Марсика и Барсика. Они оба <strong>очень</strong> умны.
+				Это позволяет им жить насыщенной кошачьей жизнью. Фото слева было сделано на кухне перед приемом пищи.
+				На нем Барсик лижет Марсика <em>против шерсти</em></p>.
 				
-				<h2 id='Википедия'> Википедия </h2>
-				<p>Узнать больше про глупый зоопарк можно на<a
-				href='https://ru.wikipedia.org/wiki/Заглавная_страница'
-				title= 'Кликни сюда и перейди на главную страницу википедии'
-				target='_blank'> википедии. </a> </p>
-				<h2> Ввод данных </h2>
-				<p>Далее идут два поля для ввода данных. В одно вы можете ввести данные, а в другое нет)) Вот такие вот хитрые атрибуты у этого элемента)</p>
-				<input type='text' disabled/>
-				<p> <input title='если ты сюда навел, то ты молодец' type='text'/> </p>
-				<p> Как известно, в html параграфы разделяются символом &lt;p&gt;. Здесь должен быть комментарий, но вы его не увидите, это же комментарий) </p>
-				<!-- Вот такой вот комментарий -->
-				<h2> Переход на другую web-страницу </h2>
-				<p> По <a 
-				href='web page with css and scripts/meta-example.html'
-				title='Страница с JS и CSS'
-				target='_blank'>данной ссылке</a> вы можете перейти на другую web-страницу, которая использует JavaScript и CSS </p>
-				<p> Процедура употребления пищи у зоопарка выглядит следующим образом: </p>
-				<ol>
-				<li>Начать ходить вокруг ног и мяукать</li>
-				<li>Тереться об ноги</li>
-				<li>Громче мяукать</li>
-				<li>Обменяться едой</li>
-				<li>Жрать</li>
-				</ol>
-				<h2> Гиперссылки</h2>
-				<p>Перейдите в раздел посвященный <a href='#Википедия'>википедии на данной странице</a>, чтобы с ней ознакомиться.
-				Вы также можете скачать <a href='progit.pdf' download='Книга про ГИТ.pdf'>pdf-книгу</a>, посвященную Git, которая весит почти 20 МБ.</p>
-				<h2> Электронная почта </h2>
-				<p><a href='mailto:mchubaroff@yandex.ru?subject=Test&bode=hello'>Отправить письмо</a> самому себе на адрес mchubaroff@yandex.ru</p>
-		</article>
-		<aside>
-			<h2> Списки или рацион котов </h2>
-			<p> Обычно эти коты жрут следующую еду: </p>
-			<ul>
-			<li>Феликс</li>
-			<li>Вискак</li>
-			<li>Человеческая еда</li>
-			<li>Салфетки</li>
-			<li>Рыбов</li>
-			</ul>
-		</aside>
-	</main>
-	<footer>
-		<p>©Авторские права никому не принадлежат, 2050. Все права защищены.</p>
-	</footer>
-  </body>
+				<h2 id='Подробнее'> Подробнее о котах </h2>
+				<p> Узнать больше о Барсике с Марсиком можно перейдя по ссылкам в навигационном меню. Оно включает следующие разделы:</p>
+				<ul>
+					<li>О Барсике - краткая информация о нем</li>
+					<li>О Марсике - краткая информация о нем</li>
+					<li>Для авторизованных - раздел для пользователей, авторизованных в системе. Содержит бонусный контент.</li>
+					<li>Войти в систему - раздел с регистрацией/авторизацией</li>
+				</ul>
+			</article>
+			<aside>
+				<h2> Рацион котов </h2>
+				<p> Обычно эти коты кушают следующую еду: </p>
+				<ul>
+					<li>Феликс</li>
+					<li>Вискак</li>
+					<li>Человеческая еда</li>
+					<li>Салфетки</li>
+					<li>Рыбов</li>
+				</ul>
+			</aside>
+		</main>
+		<footer>
+			<p>©Авторские права никому не принадлежат, 2077. Все права защищены.</p>
+		</footer>
+	</body>
 </html>
