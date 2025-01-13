@@ -27,3 +27,7 @@ async def get_bonus_page(request: Request):
 @router.get('/oauth', response_class=HTMLResponse)
 async def get_oauth_page(request: Request):
     return templates.TemplateResponse(request=request, name="oauth.html")
+
+@router.get('/reg', response_class=HTMLResponse)
+async def get_reg_page(request: Request):
+    return templates.TemplateResponse(request=request, name="reg.html")

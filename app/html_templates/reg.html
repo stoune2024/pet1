@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang='ru'>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width"/>
+		<meta name='author' content='Maxim Chubarov'/>
+		<meta name='description' content='Страница для регистрации'/>
+		<title>Регистрация</title>
+		<link rel='shortcut icon' href="{{ url_for('static', path='/my_icon.jpg') }}" type='image/x-icon' />
+		<link 
+		href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
+		rel='stylesheer'
+		type='text/css'/>
+		<link rel="stylesheet" href="{{ url_for('static', path='/reg_page/reg.css') }}" />
+	</head>
+	<body>
+		<form>
+			<h1>Регистрация</h1>
+			<p>
+			  Обязательные поля отмечены символом:
+			  <strong><abbr title="Обязательное поле">*</abbr></strong>.
+			</p>
+			<fieldset>
+				<legend><p>Основная информация</p></legend>
+				<p>
+					<label for="name">Логин (будет использоваться для входа):<strong><abbr title="Обязательное поле">*</abbr></strong></label>
+					<input type="text" id="name" name="username" />
+				</p>
+				<p>
+					<label for="mail">Электронная почта:</label>
+					<input type="email" id="mail" name="usermail">
+			    </p>
+				<p>
+					<label for="pwd">Пароль:<strong><abbr title="Обязательное поле">*</abbr></strong></label>
+					<input type="password" id="pwd" name="password" />
+				</p>
+			</fieldset>
+			<fieldset>
+				<legend><p>Дополнительная информация</p></legend>
+				<p>
+					<label for="personal_name">Ваше имя:</label>
+					<input type="text" id="personal_name" name="personal_username" />
+				</p>
+				<p>
+					Ваш пол:
+				</p>
+				<ul class='sex'>
+				  <li>
+					<label for="sex_male">
+					  <input type="radio" id="sex_male" name="sex" value="male">
+					  Мужской
+					</label>
+				  </li>
+				  <li>
+					<label for="sex_female">
+					  <input type="radio" id="sex_female" name="sex" value="female">
+					  Женский
+					</label>
+				  </li>
+				</ul>
+				<p>
+					<label for="birth">Дата рождения:</label>
+					<input type="date" id="birth" name="birthdate">
+				</p>
+				<p>
+					<label for="sympathy">Ваша симпатия:</label>
+					<select id="sympathy" name="sympathy">
+					  <option value="barsik">Барсик</option>
+					  <option value="marsik">Марсик</option>
+					  <option value="both">Оба)</option>
+					</select>
+				</p>
+			</fieldset>
+			<p class='button'><button type="submit">Отправить</button></p>
+		</form>
+	</body>
+</html>
