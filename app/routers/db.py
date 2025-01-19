@@ -1,12 +1,13 @@
 import datetime
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Request
-from sqlmodel import SQLModel, create_engine, Session, Field
+from fastapi import APIRouter, Depends, Form, Request, Query, HTTPException
+from sqlmodel import SQLModel, create_engine, Session, Field, select
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory='html_templates/')
+
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -44,11 +45,57 @@ def on_startup():
     create_db_and_tables()
 
 
-# Регистрация пользователя
 @router.post("/reg", response_class=HTMLResponse)
 def create_user(user: Annotated[User, Form()], session: SessionDep, request: Request):
+    """
+Функция создает пользователя и добавляет его в базу данных.
+    :param user: Объект модели User
+    :param session: Сессия
+    :param request: Запрос. Требуется для Jinja2 для создания шаблона
+    :return: Шаблон Jinja2, говорящий об успешной регистрации
+    """
     db_user = User.model_validate(user)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
     return templates.TemplateResponse(request=request, name="suc_reg.html")
+
+
+# Не реализована
+@router.get("/users/", response_model=list[User])
+def read_heroes(
+        session: SessionDep,
+        offset: int = 0,
+        limit: Annotated[int, Query(le=100)] = 100,
+):
+    """
+Функция получения списка всех пользователей со всеми полями. Функция работает, но пока не реализована на практике.
+    :param session: Сессия
+    :param offset: Отступ
+    :param limit: Лимит
+    :return: Список пользователей без пароля
+    """
+    users = session.exec(select(User).offset(offset).limit(limit)).all()
+    return users
+
+
+# Не реализована
+@router.patch("/users/{user_id}", response_model=User)
+def update_user(user_id: int, user: Annotated[User, Form()], session: SessionDep):
+    """
+Функция обновления данных конкретного пользователя в БД. Функция работает, но пока не реализована на практике.
+    :param user_id: Параметр пути, в то же время являющийся id в БД
+    :param user: Тело запроса с данными для обновления
+    :param session: Сессия
+    :return: Обновленный пользователь
+    """
+    user_db = session.get(User, user_id)
+    if not user_db:
+        raise HTTPException(status_code=404, detail="Oops.. User not found")
+    user = User.model_validate(user)
+    user_data = user.model_dump(exclude_unset=True)
+    user_db.sqlmodel_update(user_data)
+    session.add(user_db)
+    session.commit()
+    session.refresh(user_db)
+    return user_db
