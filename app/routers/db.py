@@ -84,7 +84,6 @@ def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, reques
     session.refresh(db_user)
     return templates.TemplateResponse(request=request, name="suc_reg.html")
 
-
 # Работает. Не реализована
 @router.get("/users/", response_model=list[UserPublic])
 def read_users(
@@ -139,3 +138,15 @@ def delete_user(user_id: int, session: SessionDep):
     session.commit()
     return {"ok": True}
 
+
+def read_one_user(username: str, session: SessionDep):
+    """
+Вспомогательная функция, используемая в safety.py для получения пользователя из БД
+    :param username: Логин
+    :param session: Сессия
+    :return: Пользователь
+    """
+    user = session.exec(select(User).where(User.username == username)).one()
+    if not user:
+        raise HTTPException(status_code=404, detail="Oops...User not found")
+    return user
