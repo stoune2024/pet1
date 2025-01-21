@@ -8,16 +8,40 @@ from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory='html_templates/')
 
+# Модель монолит - старая версия
+# class User(SQLModel, table=True):
+#     id: int | None = Field(default=None, primary_key=True)
+#     username: str
+#     usermail: EmailStr | None = Field(default=None)
+#     personal_username: str | None = None
+#     sex: str | None = None
+#     birthdate: datetime.date | None = None
+#     sympathy: str | None = None
+#     password: str
 
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    username: str
+
+class UserBase(SQLModel):
     usermail: EmailStr | None = Field(default=None)
     personal_username: str | None = None
     sex: str | None = None
     birthdate: datetime.date | None = None
     sympathy: str | None = None
+
+class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    username: str
     password: str
+
+class UserPublic(UserBase):
+    id: int
+
+class UserCreate(UserBase):
+    username: str
+    password: str
+
+class UserUpdate(UserBase):
+    username: str | None = None
+    password: str | None = None
 
 
 sqlite_file_name = "../database.db"
@@ -46,7 +70,7 @@ def on_startup():
 
 
 @router.post("/reg", response_class=HTMLResponse)
-def create_user(user: Annotated[User, Form()], session: SessionDep, request: Request):
+def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, request: Request):
     """
 Функция создает пользователя и добавляет его в базу данных.
     :param user: Объект модели User
@@ -61,9 +85,9 @@ def create_user(user: Annotated[User, Form()], session: SessionDep, request: Req
     return templates.TemplateResponse(request=request, name="suc_reg.html")
 
 
-# Не реализована
-@router.get("/users/", response_model=list[User])
-def read_heroes(
+# Работает. Не реализована
+@router.get("/users/", response_model=list[UserPublic])
+def read_users(
         session: SessionDep,
         offset: int = 0,
         limit: Annotated[int, Query(le=100)] = 100,
@@ -79,9 +103,9 @@ def read_heroes(
     return users
 
 
-# Не реализована
-@router.patch("/users/{user_id}", response_model=User)
-def update_user(user_id: int, user: Annotated[User, Form()], session: SessionDep):
+# Работает. Не реализована
+@router.patch("/users/{user_id}", response_model=UserPublic)
+def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: SessionDep):
     """
 Функция обновления данных конкретного пользователя в БД. Функция работает, но пока не реализована на практике.
     :param user_id: Параметр пути, в то же время являющийся id в БД
@@ -99,3 +123,19 @@ def update_user(user_id: int, user: Annotated[User, Form()], session: SessionDep
     session.commit()
     session.refresh(user_db)
     return user_db
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, session: SessionDep):
+    """
+Функция удаления пользователя из БД. Функция работает, но пока не реализована на практике.
+    :param user_id: Параметр пути, в то же время являющийся id в БД
+    :param session: Сессия
+    :return: Подтверждение удаления
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Oops.. User not found")
+    session.delete(user)
+    session.commit()
+    return {"ok": True}
+
