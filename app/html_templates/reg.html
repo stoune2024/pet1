@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="{{ url_for('static', path='/reg_page/reg.css') }}" />
 	</head>
 	<body>
-		<form action="/reg" method="post">
+		<form action="/reg/" method="post">
 			<h1>Регистрация</h1>
 			<p>
 			  Обязательные поля отмечены символом:
@@ -32,7 +32,7 @@
 			    </p>
 				<p>
 					<label for="pwd">Пароль:<strong><abbr title="Обязательное поле">*</abbr></strong></label>
-					<input type="password" id="pwd" name="password" />
+					<input type="password" id="pwd" name="hashed_password" />
 				</p>
 			</fieldset>
 			<fieldset>

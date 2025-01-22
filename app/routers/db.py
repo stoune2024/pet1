@@ -5,6 +5,10 @@ from sqlmodel import SQLModel, create_engine, Session, Field, select
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from passlib.context import CryptContext
+
+# Контекст PassLib. Используется для хэширования пользовательских паролей.
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 templates = Jinja2Templates(directory='html_templates/')
 
@@ -30,21 +34,22 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     username: str
-    password: str
+    hashed_password: str
 
 class UserPublic(UserBase):
     id: int
 
 class UserCreate(UserBase):
     username: str
-    password: str
+    hashed_password: str
 
 class UserUpdate(UserBase):
     username: str | None = None
-    password: str | None = None
+    hashed_password: str | None = None
 
 
 sqlite_file_name = "../database.db"
+
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 engine = create_engine(sqlite_url)
@@ -69,7 +74,7 @@ def on_startup():
     create_db_and_tables()
 
 
-@router.post("/reg", response_class=HTMLResponse)
+@router.post("/reg/", response_class=HTMLResponse)
 def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, request: Request):
     """
 Функция создает пользователя и добавляет его в базу данных.
@@ -78,6 +83,7 @@ def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, reques
     :param request: Запрос. Требуется для Jinja2 для создания шаблона
     :return: Шаблон Jinja2, говорящий об успешной регистрации
     """
+    user.hashed_password = pwd_context.hash(user.hashed_password)
     db_user = User.model_validate(user)
     session.add(db_user)
     session.commit()
@@ -137,16 +143,3 @@ def delete_user(user_id: int, session: SessionDep):
     session.delete(user)
     session.commit()
     return {"ok": True}
-
-
-def read_one_user(username: str, session: SessionDep):
-    """
-Вспомогательная функция, используемая в safety.py для получения пользователя из БД
-    :param username: Логин
-    :param session: Сессия
-    :return: Пользователь
-    """
-    user = session.exec(select(User).where(User.username == username)).one()
-    if not user:
-        raise HTTPException(status_code=404, detail="Oops...User not found")
-    return user
