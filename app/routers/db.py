@@ -12,6 +12,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 templates = Jinja2Templates(directory='html_templates/')
 
+
 # Модель монолит - старая версия
 # class User(SQLModel, table=True):
 #     id: int | None = Field(default=None, primary_key=True)
@@ -31,21 +32,25 @@ class UserBase(SQLModel):
     birthdate: datetime.date | None = None
     sympathy: str | None = None
 
+
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     username: str
     hashed_password: str
 
+
 class UserPublic(UserBase):
     id: int
 
+
 class UserCreate(UserBase):
     username: str
-    hashed_password: str
+    password: str
 
-class UserUpdate(UserBase):
+
+class UserUpdate(SQLModel):
     username: str | None = None
-    hashed_password: str | None = None
+    password: str | None = None
 
 
 sqlite_file_name = "../database.db"
@@ -83,12 +88,14 @@ def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, reques
     :param request: Запрос. Требуется для Jinja2 для создания шаблона
     :return: Шаблон Jinja2, говорящий об успешной регистрации
     """
-    user.hashed_password = pwd_context.hash(user.hashed_password)
-    db_user = User.model_validate(user)
+    hashed_password = pwd_context.hash(user.password)
+    extra_data = {"hashed_password": hashed_password}
+    db_user = User.model_validate(user, update=extra_data)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
     return templates.TemplateResponse(request=request, name="suc_reg.html")
+
 
 # Работает. Не реализована
 @router.get("/users/", response_model=list[UserPublic])
@@ -123,11 +130,17 @@ def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: Sess
         raise HTTPException(status_code=404, detail="Oops.. User not found")
     user = User.model_validate(user)
     user_data = user.model_dump(exclude_unset=True)
-    user_db.sqlmodel_update(user_data)
+    extra_data = {}
+    if "password" in user_data:
+        password = user_data["password"]
+        hashed_password = pwd_context.hash(password)
+        extra_data["hashed_password"] = hashed_password
+    user_db.sqlmodel_update(user_data, update=extra_data)
     session.add(user_db)
     session.commit()
     session.refresh(user_db)
     return user_db
+
 
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, session: SessionDep):
