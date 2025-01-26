@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from typing import Annotated
+from .db import User
+from .safety import get_current_user
 
 router = APIRouter(tags=['Фронтенд'])
 
@@ -23,8 +26,12 @@ async def get_marsik_page(request: Request):
 
 
 @router.get('/bonus', response_class=HTMLResponse)
-async def get_bonus_page(request: Request):
-    return templates.TemplateResponse(request=request, name="bonus.html")
+async def get_bonus_page(
+        request: Request,
+        current_user: Annotated[User, Depends(get_current_user)]
+):
+    if current_user:
+        return templates.TemplateResponse(request=request, name="bonus.html")
 
 
 @router.get('/oauth', response_class=HTMLResponse)

@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from passlib.context import CryptContext
-from sqlmodel import create_engine, Session, select
+from sqlmodel import create_engine, Session, select, SQLModel
+from starlette.templating import _TemplateResponse
+
 from .db import User
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 import jwt
-from typing import Annotated
+from typing import Annotated, Tuple, Any
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
+
+templates = Jinja2Templates(directory='html_templates/')
 
 SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
 ALGORITHM = "HS256"
@@ -29,7 +35,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-sqlite_file_name = "../../database.db"
+sqlite_file_name = "../database.db"
 
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
@@ -118,7 +124,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-# @router.post("/oauth/auth")
+@router.on_event("startup")
+def on_startup():
+    SQLModel.metadata.create_all(engine)
+
+
+# @router.post("/token")
 # async def login_for_access_token(
 #         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 # ) -> Token:
@@ -139,3 +150,49 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 #         data={"sub": user.username}, expires_delta=access_token_expires
 #     )
 #     return Token(access_token=access_token, token_type="bearer")
+
+@router.post("/token")
+async def login_for_access_token(
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        request: Request
+):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    token = Token(access_token=access_token, token_type="bearer")
+    return templates.TemplateResponse(request=request, name="suc_oauth.html",
+                                      headers={"Authorization": f"Bearer {token}"})
+
+
+# @router.get("/token")
+# async def login(request: Request):
+#     return templates.TemplateResponse(request=request, name="suc_oauth.html")
+
+
+# @router.post("/token")
+# async def login(
+#         request: Request,
+#         token: Annotated[Token, Depends(login_for_access_token)]
+# ):
+#     if token:
+#         return templates.TemplateResponse(request=request, name="suc_oauth.html")
+
+
+@router.get("/users/me/", response_model=User)
+async def read_users_me(
+        current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+Функиця вспомогательная. Используется для проверки авторизации в Swagger UI.
+    :param current_user:
+    :return:
+    """
+    return current_user
