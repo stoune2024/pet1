@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Request
 from passlib.context import CryptContext
 from sqlmodel import create_engine, Session, select, SQLModel
+from starlette.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
-from .db import User
+from .db import User, UserPublic
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 import jwt
@@ -11,7 +12,7 @@ from typing import Annotated, Tuple, Any
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 templates = Jinja2Templates(directory='html_templates/')
 
@@ -154,8 +155,14 @@ def on_startup():
 @router.post("/token")
 async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        request: Request
+        response: Response,
 ):
+    """
+Функиця создания JWT-токена
+    :param response:
+    :param form_data: Форма авторизации, заполняемая пользователем
+    :return: JWT-токен
+    """
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -168,25 +175,16 @@ async def login_for_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     token = Token(access_token=access_token, token_type="bearer")
-    return templates.TemplateResponse(request=request, name="suc_oauth.html",
-                                      headers={"Authorization": f"Bearer {token}"})
+    response.set_cookie(key="access_token", value=token, httponly=True)
+    return {"access_token": access_token}
 
 
-# @router.get("/token")
-# async def login(request: Request):
-#     return templates.TemplateResponse(request=request, name="suc_oauth.html")
+
+# return templates.TemplateResponse(request=request, name="suc_oauth.html",
+#                                   headers={"Authorization": f"Bearer {token}"})
 
 
-# @router.post("/token")
-# async def login(
-#         request: Request,
-#         token: Annotated[Token, Depends(login_for_access_token)]
-# ):
-#     if token:
-#         return templates.TemplateResponse(request=request, name="suc_oauth.html")
-
-
-@router.get("/users/me/", response_model=User)
+@router.get("/users/me/", response_model=UserPublic)
 async def read_users_me(
         current_user: Annotated[User, Depends(get_current_user)],
 ):

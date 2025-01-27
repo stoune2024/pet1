@@ -28,7 +28,7 @@ async def get_marsik_page(request: Request):
 @router.get('/bonus', response_class=HTMLResponse)
 async def get_bonus_page(
         request: Request,
-        current_user: Annotated[User, Depends(get_current_user)]
+        current_user: Annotated[User, Depends(get_current_user)],
 ):
     if current_user:
         return templates.TemplateResponse(request=request, name="bonus.html")
@@ -42,3 +42,8 @@ async def get_oauth_page(request: Request):
 @router.get('/reg', response_class=HTMLResponse)
 async def get_reg_page(request: Request):
     return templates.TemplateResponse(request=request, name="reg.html")
+
+
+@router.get('/suc_oauth', response_class=HTMLResponse)
+async def get_suc_oauth_page(request: Request):
+    return templates.TemplateResponse(request=request, name="suc_oauth.html")
