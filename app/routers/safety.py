@@ -102,7 +102,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """
-    Функция проверки JWT-токена пользователя и возврата пользователя, если все в порядке
+    Функция проверки JWT-токена пользователя и возврата пользователя, если все в порядке. Функция получает
+    токен из класса OAuth2PasswordBearer. Данная функция не работает на клиенте, только в Swagger UI.
     :param token: JWT-токен пользователя
     :return: Пользователь
     """
@@ -125,32 +126,37 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
+def get_token(request: Request):
+    token = request.cookies.get('users_access_token')
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token not found')
+    return token
+
+
+# async def get_current_user_from_cookies(token: Annotated[str, Depends(get_token)]):
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         username: str = payload.get("sub")
+#         if username is None:
+#             raise credentials_exception
+#         token_data = TokenData(username=username)
+#     except InvalidTokenError:
+#         raise credentials_exception
+#     user = get_user(username=token_data.username)
+#     if user is None:
+#         raise credentials_exception
+#     return user
+
+
 @router.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
 
-
-# @router.post("/token")
-# async def login_for_access_token(
-#         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-# ) -> Token:
-#     """
-# Функиця создания JWT-токена
-#     :param form_data: Форма авторизации, заполняемая пользователем
-#     :return: JWT-токен
-#     """
-#     user = authenticate_user(form_data.username, form_data.password)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Incorrect username or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     access_token = create_access_token(
-#         data={"sub": user.username}, expires_delta=access_token_expires
-#     )
-#     return Token(access_token=access_token, token_type="bearer")
 
 @router.post("/token")
 async def login_for_access_token(
@@ -175,13 +181,9 @@ async def login_for_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     token = Token(access_token=access_token, token_type="bearer")
-    response.set_cookie(key="access_token", value=token, httponly=True)
-    return {"access_token": access_token}
-
-
-
-# return templates.TemplateResponse(request=request, name="suc_oauth.html",
-#                                   headers={"Authorization": f"Bearer {token}"})
+    response.set_cookie(key="users_access_token", value=token, httponly=True)
+    # return {"access_token": access_token}
+    return token
 
 
 @router.get("/users/me/", response_model=UserPublic)
@@ -194,3 +196,14 @@ async def read_users_me(
     :return:
     """
     return current_user
+
+# @router.get("/users/me/", response_model=UserPublic)
+# async def read_users_me(
+#         current_user: Annotated[User, Depends(get_current_user_from_cookies)],
+# ):
+#     """
+# Функиця вспомогательная. Используется для проверки авторизации в Swagger UI.
+#     :param current_user:
+#     :return:
+#     """
+#     return current_user

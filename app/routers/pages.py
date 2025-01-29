@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi import APIRouter, Request, Depends, HTTPException, status, Cookie, Header
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import Annotated
 from .db import User
+from fastapi.security import OAuth2PasswordBearer
 from .safety import get_current_user
 
 router = APIRouter(tags=['Фронтенд'])
 
 templates = Jinja2Templates(directory='html_templates/')
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.get('/', response_class=HTMLResponse)
 async def get_index(request: Request):
@@ -26,7 +28,7 @@ async def get_marsik_page(request: Request):
 
 
 @router.get('/bonus', response_class=HTMLResponse)
-async def get_bonus_page(
+def get_bonus_page(
         request: Request,
         current_user: Annotated[User, Depends(get_current_user)],
 ):
