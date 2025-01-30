@@ -4,6 +4,7 @@ from routers.safety import router as safety_router
 from routers.db import router as db_router
 from fastapi.staticfiles import StaticFiles
 # from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 app = FastAPI()
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status, Cookie, Header
+from fastapi import APIRouter, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import Annotated
@@ -11,6 +11,7 @@ router = APIRouter(tags=['Фронтенд'])
 templates = Jinja2Templates(directory='html_templates/')
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 @router.get('/', response_class=HTMLResponse)
 async def get_index(request: Request):

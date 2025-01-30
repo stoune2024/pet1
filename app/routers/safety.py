@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Request
 from passlib.context import CryptContext
 from sqlmodel import create_engine, Session, select, SQLModel
-from starlette.responses import RedirectResponse
-from starlette.templating import _TemplateResponse
 
 from .db import User, UserPublic
 from pydantic import BaseModel
@@ -181,7 +179,7 @@ async def login_for_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     token = Token(access_token=access_token, token_type="bearer")
-    response.set_cookie(key="users_access_token", value=token, httponly=True)
+    # response.set_cookie(key="users_access_token", value=token, httponly=True)
     # return {"access_token": access_token}
     return token
 
@@ -196,14 +194,3 @@ async def read_users_me(
     :return:
     """
     return current_user
-
-# @router.get("/users/me/", response_model=UserPublic)
-# async def read_users_me(
-#         current_user: Annotated[User, Depends(get_current_user_from_cookies)],
-# ):
-#     """
-# Функиця вспомогательная. Используется для проверки авторизации в Swagger UI.
-#     :param current_user:
-#     :return:
-#     """
-#     return current_user
