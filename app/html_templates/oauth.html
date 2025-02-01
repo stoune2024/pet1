@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="{{ url_for('static', path='/oauth_page/oauth.css') }}" />
 	</head>
 	<body>
-		<form action="/token" method="post">
+		<form action="/login" method="post">
 			<h1>Вход в систему</h1>
 			<fieldset>
 				<legend><p>Введите логин и пароль для авторизации</p></legend>
@@ -28,7 +28,7 @@
 				</p>
 				<button type="submit">Отправить</button>
 			</fieldset>
-			<p>Нет учетной записи? <a href="{{ url_for('get_reg_page') }} ">Зарегестрируйтесь</a>.</p>
+			<p>Нет учетной записи? <a href="{{ url_for('get_reg_page') }} ">Зарегистрируйтесь</a>.</p>
 		</form>
 	</body>
 </html>

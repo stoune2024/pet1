@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang='ru'>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width"/>
+		<meta name='author' content='Maxim Chubarov'/>
+		<title>Войдите в систему</title>
+		<link rel='shortcut icon' href="{{ url_for('static', path='/my_icon.jpg') }}" type='image/x-icon' />
+		<link 
+		href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
+		rel='stylesheer'
+		type='text/css'/>
+		<link rel="stylesheet" href="{{ url_for('static', path='/fail_oauth_page/fail_oauth.css') }}" />
+	</head>
+	<body>
+		<div>
+			<img
+					src="{{ url_for('static', path='/fail_oauth_page/red_cross.png') }}"
+					alt='Тут должно быть изображение зеленой галочки)'></img>
+			<h1>Не удалось войти в систему</h1>
+			<div class='return'>
+				<a href="{{ url_for('get_index') }}">На главную</a>
+			</div>
+		</div>
+	</body>
+</html>

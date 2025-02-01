@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Request
 from passlib.context import CryptContext
 from sqlmodel import create_engine, Session, select, SQLModel
-
 from .db import User, UserPublic
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 import jwt
-from typing import Annotated, Tuple, Any
+from typing import Annotated, Optional
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security.utils import get_authorization_scheme_param
 from jwt.exceptions import InvalidTokenError
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 templates = Jinja2Templates(directory='html_templates/')
 
@@ -18,6 +19,11 @@ SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 # Модель для ответа на запрос на получения токена
 class Token(BaseModel):
@@ -29,10 +35,43 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
+class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
+    """ Расширяет функционал класса OAuth2PasswordBearer с целью получения JWT-токена из Cookie"""
+
+    async def __call__(self, request: Request) -> Optional[str]:
+        authorization = request.headers.get("Authorization")
+        if authorization is not None:
+            scheme, param = get_authorization_scheme_param(authorization)
+            if not authorization or scheme.lower() != "bearer":
+                if self.auto_error:
+                    raise credentials_exception
+                else:
+                    return None
+            return param
+        token = request.cookies.get('access-token')
+        if token:
+            param = token
+            return param
+        else:
+            print('ошабка тут')
+            raise credentials_exception
+
+
+class HTTPExceptionWithResponse(HTTPException):
+    async def __call__(self, request: Request):
+        pass
+        # return templates.TemplateResponse(request=request, name="fail_oauth.html")
+        # redirect_url = "/fail_oauth"
+        # response = RedirectResponse(
+        #     redirect_url, status_code=status.HTTP_401_UNAUTHORIZED
+        # )
+        # return response
+
+
 # Контекст PassLib. Используется для хэширования и проверки паролей.
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
 sqlite_file_name = "../database.db"
 
@@ -98,18 +137,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def verify_token(
+        token: Annotated[str, Depends(oauth2_scheme)],
+        request: Request
+):
     """
     Функция проверки JWT-токена пользователя и возврата пользователя, если все в порядке. Функция получает
     токен из класса OAuth2PasswordBearer. Данная функция не работает на клиенте, только в Swagger UI.
-    :param token: JWT-токен пользователя
-    :return: Пользователь
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -117,38 +152,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
             raise credentials_exception
         token_data = TokenData(username=username)
     except InvalidTokenError:
+        print('ошибка 2')
         raise credentials_exception
     user = get_user(username=token_data.username)
     if user is None:
         raise credentials_exception
-    return user
-
-
-def get_token(request: Request):
-    token = request.cookies.get('users_access_token')
-    if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token not found')
-    return token
-
-
-# async def get_current_user_from_cookies(token: Annotated[str, Depends(get_token)]):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username: str = payload.get("sub")
-#         if username is None:
-#             raise credentials_exception
-#         token_data = TokenData(username=username)
-#     except InvalidTokenError:
-#         raise credentials_exception
-#     user = get_user(username=token_data.username)
-#     if user is None:
-#         raise credentials_exception
-#     return user
+    return token_data
 
 
 @router.on_event("startup")
@@ -156,41 +165,42 @@ def on_startup():
     SQLModel.metadata.create_all(engine)
 
 
-@router.post("/token")
-async def login_for_access_token(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        response: Response,
+@router.post("/login")
+async def validate_login_form(
+        request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
     """
-Функиця создания JWT-токена
-    :param response:
-    :param form_data: Форма авторизации, заполняемая пользователем
-    :return: JWT-токен
+Эндпоинт отвечает за обработку данных, пришедших из формы авторизации. Если пользователь успешно прошел
+аутентификацию и авторизацию JWT-токен сохраняется в куках. Происходит перенаправление на другую страницу.
+
+    """
+    token = await login_for_access_token(request, form_data)
+    access_token = token.get("access_token")
+    redirect_url = "/suc_oauth"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = RedirectResponse(
+        redirect_url, status_code=status.HTTP_303_SEE_OTHER, headers=headers
+    )
+    response.set_cookie(
+        key='access-token', value=access_token, httponly=True, secure=True)
+    return response
+
+
+@router.post("/token")
+async def login_for_access_token(
+        request: Request,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+):
+    """
+Эндпоинт отвечает за аутентификацию пользователя и генерацию JWT-токена. Функция работает как зависимость
+в эндпоинте POST /login
+
     """
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise credentials_exception
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    token = Token(access_token=access_token, token_type="bearer")
-    # response.set_cookie(key="users_access_token", value=token, httponly=True)
-    # return {"access_token": access_token}
-    return token
-
-
-@router.get("/users/me/", response_model=UserPublic)
-async def read_users_me(
-        current_user: Annotated[User, Depends(get_current_user)],
-):
-    """
-Функиця вспомогательная. Используется для проверки авторизации в Swagger UI.
-    :param current_user:
-    :return:
-    """
-    return current_user
+    return {"access_token": access_token, "token_type": "bearer"}
