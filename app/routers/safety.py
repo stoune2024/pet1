@@ -1,3 +1,4 @@
+import sqlalchemy.exc
 from fastapi import APIRouter, HTTPException, status, Depends, Request
 from passlib.context import CryptContext
 from sqlmodel import create_engine, Session, select, SQLModel
@@ -10,8 +11,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security.utils import get_authorization_scheme_param
 from jwt.exceptions import InvalidTokenError
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from starlette.status import HTTP_401_UNAUTHORIZED
+from fastapi.responses import RedirectResponse
+from sqlalchemy.exc import InvalidRequestError
 
 templates = Jinja2Templates(directory='html_templates/')
 
@@ -19,13 +20,7 @@ SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
-# Модель для ответа на запрос на получения токена
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -44,7 +39,11 @@ class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
             scheme, param = get_authorization_scheme_param(authorization)
             if not authorization or scheme.lower() != "bearer":
                 if self.auto_error:
-                    raise credentials_exception
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Could not find Authorization header",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
                 else:
                     return None
             return param
@@ -53,19 +52,11 @@ class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
             param = token
             return param
         else:
-            print('ошабка тут')
-            raise credentials_exception
-
-
-class HTTPExceptionWithResponse(HTTPException):
-    async def __call__(self, request: Request):
-        pass
-        # return templates.TemplateResponse(request=request, name="fail_oauth.html")
-        # redirect_url = "/fail_oauth"
-        # response = RedirectResponse(
-        #     redirect_url, status_code=status.HTTP_401_UNAUTHORIZED
-        # )
-        # return response
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not find token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
 # Контекст PassLib. Используется для хэширования и проверки паролей.
@@ -106,9 +97,16 @@ def get_user(username: str):
     :param username: Логин для получения по нему
     :return: Запись о пользователе из БД
     """
-    with Session(engine) as session:
-        user = session.exec(select(User).where(User.username == username)).one()
-        return user
+    try:
+        with Session(engine) as session:
+            user = session.exec(select(User).where(User.username == username)).one()
+            return user
+    except InvalidRequestError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 def authenticate_user(username: str, password: str):
@@ -149,14 +147,25 @@ async def verify_token(
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise credentials_exception
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not find token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         token_data = TokenData(username=username)
     except InvalidTokenError:
-        print('ошибка 2')
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token is invalid",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     user = get_user(username=token_data.username)
     if user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not find user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return token_data
 
 
@@ -198,7 +207,11 @@ async def login_for_access_token(
     """
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not find user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires

@@ -57,8 +57,3 @@ async def get_suc_oauth_page(
         "username": user_token.username
     }
     return templates.TemplateResponse(request=request, name="suc_oauth.html", context=context)
-
-
-@router.get('/fail_oauth', response_class=HTMLResponse)
-async def get_fail_oauth_page(request: Request):
-    return templates.TemplateResponse(request=request, name="fail_oauth.html")
