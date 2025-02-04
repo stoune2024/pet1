@@ -33,7 +33,7 @@ def app_context_401(request: Request) -> Dict[str, Any]:
 Функция процессор-контекста. Используется Jinja2 для вставки дополнительных данных на html-страницу. Таким образом,
 превращая статическую страницу в динамическую.
     """
-    return {"message": 'Пользователь не авторизован'}
+    return {"message": 'Пользователь unauthorized'}
 
 
 def app_context_404(request: Request) -> Dict[str, Any]:
@@ -44,28 +44,23 @@ def app_context_404(request: Request) -> Dict[str, Any]:
     return {"message": 'Пользователь не найден'}
 
 
-templates = Jinja2Templates(directory='html_templates/', context_processors=[app_context_404, app_context_401])
+templates_401 = Jinja2Templates(directory='html_templates/', context_processors=[app_context_401])
+templates_404 = Jinja2Templates(directory='html_templates/', context_processors=[app_context_404])
 
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
-    print('до 401')
     if exc.status_code == 401:
-        print('после 401')
-        return templates.TemplateResponse(
+        return templates_401.TemplateResponse(
             request=request,
             name="fail_oauth.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            # context={"message": 'Пользователь не авторизован'}
         )
-    print('до 404')
     if exc.status_code == 404:
-        print('после 404')
-        return templates.TemplateResponse(
+        return templates_404.TemplateResponse(
             request=request,
             name="fail_oauth.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            # context={"message": 'Пользователь не найден'}
         )
