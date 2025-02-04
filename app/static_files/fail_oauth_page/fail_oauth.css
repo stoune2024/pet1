@@ -1,9 +1,5 @@
 /* || General setup */
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
 
 html {
   font-size: 10px;
@@ -12,7 +8,6 @@ html {
 
 body {
 	text-align:center;
-	margin: 0 auto;
 	margin-top:30vh;
 	margin-bottom:30vh;
 }
@@ -24,30 +19,11 @@ h1, h2, h3 {
   color: #2a2a2a;
 }
 
-p, input, li {
-  font-family: 'Open Sans Condensed', sans-serif;
-  color: #2a2a2a;
-}
-
 h1 {
   font-size: 4rem;
   text-align: center;
   color: white;
   text-shadow: 2px 2px 10px black;
-}
-
-h2 {
-  font-size: 3rem;
-  text-align: center;
-}
-
-h3 {
-  font-size: 2.2rem;
-}
-
-p, li {
-  font-size: 1.6rem;
-  line-height: 1.5;
 }
 
 /* || main layout */

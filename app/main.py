@@ -33,7 +33,7 @@ def app_context_401(request: Request) -> Dict[str, Any]:
 Функция процессор-контекста. Используется Jinja2 для вставки дополнительных данных на html-страницу. Таким образом,
 превращая статическую страницу в динамическую.
     """
-    return {"message": 'Пользователь unauthorized'}
+    return {"message": 'Пользователь не авторизован'}
 
 
 def app_context_404(request: Request) -> Dict[str, Any]:
