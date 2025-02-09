@@ -27,40 +27,26 @@ app.include_router(db_router)
 
 app.mount("/", StaticFiles(directory="static_files"), name="static")
 
-
-def app_context_401(request: Request) -> Dict[str, Any]:
-    """
-Функция процессор-контекста. Используется Jinja2 для вставки дополнительных данных на html-страницу. Таким образом,
-превращая статическую страницу в динамическую.
-    """
-    return {"message": 'Пользователь не авторизован'}
-
-
-def app_context_404(request: Request) -> Dict[str, Any]:
-    """
-Функция процессор-контекста. Используется Jinja2 для вставки дополнительных данных на html-страницу. Таким образом,
-превращая статическую страницу в динамическую.
-    """
-    return {"message": 'Пользователь не найден'}
-
-
-templates_401 = Jinja2Templates(directory='html_templates/', context_processors=[app_context_401])
-templates_404 = Jinja2Templates(directory='html_templates/', context_processors=[app_context_404])
+templates = Jinja2Templates(directory='html_templates/')
 
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     if exc.status_code == 401:
-        return templates_401.TemplateResponse(
+        message = "Пользователь не авторизован"
+        return templates.TemplateResponse(
             request=request,
             name="fail_oauth.html",
             status_code=exc.status_code,
             headers=exc.headers,
+            context={"message": message}
         )
     if exc.status_code == 404:
-        return templates_404.TemplateResponse(
+        message = "Пользователь не найден"
+        return templates.TemplateResponse(
             request=request,
             name="fail_oauth.html",
             status_code=exc.status_code,
             headers=exc.headers,
+            context={"message": message}
         )
