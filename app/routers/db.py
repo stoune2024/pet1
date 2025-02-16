@@ -6,8 +6,9 @@ from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from passlib.context import CryptContext
+from contextlib import asynccontextmanager
 
-# Контекст PassLib. Используется для хэширования пользовательских паролей.
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 templates = Jinja2Templates(directory='html_templates/')
@@ -71,12 +72,13 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-router = APIRouter(tags=['База данных'])
 
-
-@router.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(router: APIRouter):
     create_db_and_tables()
+    yield
+
+router = APIRouter(tags=['База данных'], lifespan=lifespan)
 
 
 @router.post("/reg/", response_class=HTMLResponse)

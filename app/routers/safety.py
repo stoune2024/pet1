@@ -13,6 +13,8 @@ from jwt.exceptions import InvalidTokenError
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import InvalidRequestError
+from contextlib import asynccontextmanager
+
 
 templates = Jinja2Templates(directory='html_templates/')
 
@@ -70,7 +72,6 @@ sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 engine = create_engine(sqlite_url)
 
-router = APIRouter(tags=['Безопасность'])
 
 
 def get_password_hash(password):
@@ -169,9 +170,13 @@ async def verify_token(
     return token_data
 
 
-@router.on_event("startup")
-def on_startup():
+
+@asynccontextmanager
+async def lifespan(router: APIRouter):
     SQLModel.metadata.create_all(engine)
+    yield
+
+router = APIRouter(tags=['Безопасность'], lifespan=lifespan)
 
 
 @router.post("/login")

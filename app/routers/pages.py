@@ -6,14 +6,16 @@ from .db import User
 from fastapi.security import OAuth2PasswordBearer
 from .safety import verify_token, TokenData
 from fastapi.staticfiles import StaticFiles
+from os.path import relpath
 
 
 router = APIRouter(tags=['Фронтенд'])
 
 templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
 
-# !!! Комментировать при запуске приложения, разкоментировать при тестировании !!!
-router.mount("/static_files", StaticFiles(directory="app/static_files"), name="static")
+router.mount('/static_files', StaticFiles(directory=relpath(f'{relpath(__file__)}/../../static_files')), name='static')
+
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
