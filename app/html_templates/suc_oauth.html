@@ -16,7 +16,7 @@
 	<body>
 		<div>
 			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}" alt='Тут должно быть изображение зеленой галочки)'></img>
-			<h1>Успешная авторизация!</h1>
+			<h1>Успешная авторизация, {{ username }}!</h1>
 			<div class='return'>
 				<a href="{{ url_for('get_index') }}">На главную</a>
 			</div>

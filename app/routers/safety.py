@@ -178,7 +178,6 @@ async def lifespan(router: APIRouter):
 
 router = APIRouter(tags=['Безопасность'], lifespan=lifespan)
 
-
 @router.post("/login")
 async def validate_login_form(
         request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]

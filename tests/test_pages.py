@@ -25,7 +25,22 @@ def test_get_marsik_page():
     assert response.status_code == 200
     assert '<!doctype html>' in response.text
 
-def test_bonus_page():
+def test_get_bonus_page():
     response = client.get("/bonus")
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+def test_get_oauth_page():
+    response = client.get("/oauth")
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+def test_get_reg_page():
+    response = client.get("/reg")
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+def test_get_suc_oauth_page():
+    response = client.get("/suc_oauth")
     assert response.status_code == 200
     assert '<!doctype html>' in response.text

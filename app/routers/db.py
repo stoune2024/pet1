@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 from contextlib import asynccontextmanager
 
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 templates = Jinja2Templates(directory='html_templates/')
@@ -79,7 +80,6 @@ async def lifespan(router: APIRouter):
     yield
 
 router = APIRouter(tags=['База данных'], lifespan=lifespan)
-
 
 @router.post("/reg/", response_class=HTMLResponse)
 def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, request: Request):
