@@ -1,14 +1,12 @@
 from fastapi import FastAPI, HTTPException, status, Request
-
-# from app.routers.safety import lifespan
 from routers.pages import router as pages_router
 from routers.pages import templates
 from routers.safety import router as safety_router, verify_token, TokenData
 from routers.db import router as db_router
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
-from contextlib import asynccontextmanager
-from sqlmodel import SQLModel, create_engine
+# from contextlib import asynccontextmanager
+# from sqlmodel import SQLModel, create_engine
 
 
 

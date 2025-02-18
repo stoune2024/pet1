@@ -15,17 +15,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 templates = Jinja2Templates(directory='html_templates/')
 
 
-# Модель монолит - старая версия
-# class User(SQLModel, table=True):
-#     id: int | None = Field(default=None, primary_key=True)
-#     username: str
-#     usermail: EmailStr | None = Field(default=None)
-#     personal_username: str | None = None
-#     sex: str | None = None
-#     birthdate: datetime.date | None = None
-#     sympathy: str | None = None
-#     password: str
-
 
 class UserBase(SQLModel):
     usermail: EmailStr | None = Field(default=None)
