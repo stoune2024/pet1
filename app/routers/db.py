@@ -7,13 +7,12 @@ from starlette.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager
-
-
+from os.path import relpath
+from fastapi.staticfiles import StaticFiles
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-templates = Jinja2Templates(directory='html_templates/')
-
+templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
 
 
 class UserBase(SQLModel):
@@ -68,7 +67,11 @@ async def lifespan(router: APIRouter):
     create_db_and_tables()
     yield
 
+
 router = APIRouter(tags=['База данных'], lifespan=lifespan)
+
+router.mount('/static_files', StaticFiles(directory=relpath(f'{relpath(__file__)}/../../static_files')), name='static')
+
 
 @router.post("/reg/", response_class=HTMLResponse)
 def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, request: Request):
@@ -132,7 +135,7 @@ def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: Sess
     session.refresh(user_db)
     return user_db
 
-
+# Работает, не реализована
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, session: SessionDep):
     """

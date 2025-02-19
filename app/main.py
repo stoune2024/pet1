@@ -2,12 +2,12 @@ from fastapi import FastAPI, HTTPException, status, Request
 from routers.pages import router as pages_router
 from routers.pages import templates
 from routers.safety import router as safety_router, verify_token, TokenData
-from routers.db import router as db_router
+from routers.db import router as db_router, get_session, UserCreate, User, pwd_context
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
+
 # from contextlib import asynccontextmanager
 # from sqlmodel import SQLModel, create_engine
-
 
 
 app = FastAPI()
@@ -15,7 +15,6 @@ app = FastAPI()
 app.include_router(pages_router)
 app.include_router(safety_router)
 app.include_router(db_router)
-
 
 app.mount('/static_files', StaticFiles(directory=relpath(f'{relpath(__file__)}/../static_files')), name='static')
 
