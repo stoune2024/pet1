@@ -50,24 +50,49 @@ def test_create_user_invalid(client: TestClient):
 
 
 def test_read_users(session: Session, client: TestClient):
-    user_1 = UserCreate(username='Deadpond', password='Dive Wilson')
-    user_2 = UserCreate(username='Rusty-Man', password='Tommy Sharp', sex='male')
-
+    user_1 = UserCreate(
+        username='Deadpond',
+        password='qwe123',
+        personal_username='Dive'
+    )
     user_1_hashed_password = pwd_context.hash(user_1.password)
-    user_2_hashed_password = pwd_context.hash(user_2.password)
-
     user_1_extra_data = {"hashed_password": user_1_hashed_password}
-    user_2_extra_data = {"hashed_password": user_2_hashed_password}
-
-
     user_1_mapped = User.model_validate(user_1, update=user_1_extra_data)
-    user_2_mapped = User.model_validate(user_2, update=user_2_extra_data)
-
     session.add(user_1_mapped)
-    session.add(user_2_mapped)
     session.commit()
-
     response = client.get('/users/')
     data = response.json()
+    print(data)
     assert response.status_code == 200
-    assert len(data) == 2
+    assert len(data) == 1
+    assert data[0]["personal_username"] == user_1.personal_username
+
+
+def test_update_user(session: Session, client: TestClient):
+    user_1 = UserCreate(
+        username='Deadpond',
+        password='qwe123',
+        personal_username='Dive'
+    )
+    user_1_hashed_password = pwd_context.hash(user_1.password)
+    user_1_extra_data = {"hashed_password": user_1_hashed_password}
+    user_1_mapped = User.model_validate(user_1, update=user_1_extra_data)
+    session.add(user_1_mapped)
+    session.commit()
+
+    # Тут остановился
+    response = client.patch(f"/users/{user_1_mapped.id}", data={})
+
+
+    user_db = session.get(User, user_1_mapped[0])
+
+
+    response = client.patch(f"/heroes/{user_1_mapped.id}", json={"name": "Deadpuddle"})
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["name"] == "Deadpuddle"
+    assert data["secret_name"] == "Dive Wilson"
+    assert data["age"] is None
+    assert data["id"] == hero_1.id
+
