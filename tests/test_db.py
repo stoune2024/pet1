@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session, StaticPool
-from app.main import app, get_session, UserCreate, User, pwd_context
+from app.main import app, get_session, UserCreate, User, pwd_context, UserUpdate
 from fastapi.encoders import jsonable_encoder
 
 
@@ -21,10 +21,25 @@ def session_fixture():
 def client_fixture(session: Session):
     def get_session_override():
         return session
+
     app.dependency_overrides[get_session] = get_session_override
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(name="create_user")
+def create_user_fixture():
+    user = UserCreate(
+        username='Deadpond',
+        password='qwe123',
+        personal_username='Dive',
+        sympathy='Barsik'
+    )
+    user_hashed_password = pwd_context.hash(user.password)
+    user_extra_data = {"hashed_password": user_hashed_password}
+    user_mapped = User.model_validate(user, update=user_extra_data)
+    return user_mapped
 
 
 def test_create_user(client: TestClient):
@@ -49,50 +64,34 @@ def test_create_user_invalid(client: TestClient):
     assert response.status_code == 422
 
 
-def test_read_users(session: Session, client: TestClient):
-    user_1 = UserCreate(
-        username='Deadpond',
-        password='qwe123',
-        personal_username='Dive'
-    )
-    user_1_hashed_password = pwd_context.hash(user_1.password)
-    user_1_extra_data = {"hashed_password": user_1_hashed_password}
-    user_1_mapped = User.model_validate(user_1, update=user_1_extra_data)
-    session.add(user_1_mapped)
+def test_read_users(session: Session, client: TestClient, create_user: User):
+    session.add(create_user)
     session.commit()
     response = client.get('/users/')
     data = response.json()
-    print(data)
     assert response.status_code == 200
     assert len(data) == 1
-    assert data[0]["personal_username"] == user_1.personal_username
+    assert data[0]["personal_username"] == "Dive"
 
 
-def test_update_user(session: Session, client: TestClient):
-    user_1 = UserCreate(
-        username='Deadpond',
-        password='qwe123',
-        personal_username='Dive'
-    )
-    user_1_hashed_password = pwd_context.hash(user_1.password)
-    user_1_extra_data = {"hashed_password": user_1_hashed_password}
-    user_1_mapped = User.model_validate(user_1, update=user_1_extra_data)
-    session.add(user_1_mapped)
+def test_update_user(session: Session, client: TestClient, create_user: User):
+    session.add(create_user)
     session.commit()
-
-    # Тут остановился
-    response = client.patch(f"/users/{user_1_mapped.id}", data={})
-
-
-    user_db = session.get(User, user_1_mapped[0])
-
-
-    response = client.patch(f"/heroes/{user_1_mapped.id}", json={"name": "Deadpuddle"})
+    user_db = session.get(User, create_user.id)
+    response = client.patch(f"/users/{user_db.id}", data={"personal_username": "Dave"})
     data = response.json()
-
     assert response.status_code == 200
-    assert data["name"] == "Deadpuddle"
-    assert data["secret_name"] == "Dive Wilson"
-    assert data["age"] is None
-    assert data["id"] == hero_1.id
+    assert data["personal_username"] == "Dave"
+    assert data["sympathy"] == "Barsik"
+    assert data["sex"] is None
 
+
+def test_delete_hero(session: Session, client: TestClient, create_user: User):
+    session.add(create_user)
+    session.commit()
+    response = client.delete(f"/users/{create_user.id}")
+    data = response.json()
+    user_in_db = session.get(User, create_user.id)
+    assert response.status_code == 200
+    assert data['ok'] == True
+    assert user_in_db is None

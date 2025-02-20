@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Request, Query, HTTPException
+from fastapi import APIRouter, Depends, Form, Request, Query, HTTPException, Body
 from sqlmodel import SQLModel, create_engine, Session, Field, select
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse
@@ -38,7 +38,7 @@ class UserCreate(UserBase):
     password: str
 
 
-class UserUpdate(SQLModel):
+class UserUpdate(UserBase):
     username: str | None = None
     password: str | None = None
 
@@ -122,7 +122,6 @@ def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: Sess
     user_db = session.get(User, user_id)
     if not user_db:
         raise HTTPException(status_code=404, detail="Oops.. User not found")
-    user = User.model_validate(user)
     user_data = user.model_dump(exclude_unset=True)
     extra_data = {}
     if "password" in user_data:
@@ -134,6 +133,7 @@ def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: Sess
     session.commit()
     session.refresh(user_db)
     return user_db
+
 
 # Работает, не реализована
 @router.delete("/users/{user_id}")
