@@ -72,6 +72,17 @@ sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 engine = create_engine(sqlite_url)
 
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
+
 
 
 def get_password_hash(password):
@@ -92,16 +103,16 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(username: str):
+def get_user(username: str, session: SessionDep):
     """
 Функция получения информации о пользователе из БД
+    :param session: Текущая сессия
     :param username: Логин для получения по нему
     :return: Запись о пользователе из БД
     """
     try:
-        with Session(engine) as session:
-            user = session.exec(select(User).where(User.username == username)).one()
-            return user
+        user = session.exec(select(User).where(User.username == username)).one()
+        return user
     except InvalidRequestError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -110,14 +121,14 @@ def get_user(username: str):
         )
 
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str, session: SessionDep):
     """
 Функция аутентификации и возврата пользователя
     :param username: Логин пользователя
     :param password: Пароль пользователя для аутентификации по паролю
     :return: Пользователь (запись из БД)
     """
-    user = get_user(username)
+    user = get_user(username, session)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -173,21 +184,23 @@ async def verify_token(
 
 @asynccontextmanager
 async def lifespan(router: APIRouter):
-    SQLModel.metadata.create_all(engine)
+    create_db_and_tables()
     yield
 
 router = APIRouter(tags=['Безопасность'], lifespan=lifespan)
 
 @router.post("/login")
 async def validate_login_form(
-        request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+        request: Request,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        session: SessionDep
 ):
     """
 Эндпоинт отвечает за обработку данных, пришедших из формы авторизации. Если пользователь успешно прошел
 аутентификацию и авторизацию JWT-токен сохраняется в куках. Происходит перенаправление на другую страницу.
 
     """
-    token = await login_for_access_token(request, form_data)
+    token = await login_for_access_token(request, form_data, session)
     access_token = token.get("access_token")
     redirect_url = "/suc_oauth"
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -203,13 +216,14 @@ async def validate_login_form(
 async def login_for_access_token(
         request: Request,
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        session: SessionDep
 ):
     """
 Эндпоинт отвечает за аутентификацию пользователя и генерацию JWT-токена. Функция работает как зависимость
 в эндпоинте POST /login
 
     """
-    user = authenticate_user(form_data.username, form_data.password)
+    user = authenticate_user(form_data.username, form_data.password, session)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

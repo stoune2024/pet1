@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import create_engine, StaticPool, SQLModel, Session
-from app.main import app, OAuth2PasswordRequestForm, authenticate_user, UserCreate, pwd_context, User
+from app.main import app, OAuth2PasswordRequestForm, authenticate_user, UserCreate, pwd_context, User, get_session
 from typing import Annotated
 from fastapi import Form
 
@@ -20,13 +20,9 @@ def session_fixture():
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
-    class override_OAuth2PasswordRequestForm:
-        def __init__(self, username: Annotated[str, Form()], password: Annotated[str, Form()]):
-            self.username = username
-            self.password = password
-
-    app.dependency_overrides[OAuth2PasswordRequestForm] = override_OAuth2PasswordRequestForm
-
+    def get_session_override():
+        return session
+    app.dependency_overrides[get_session] = get_session_override
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
@@ -46,18 +42,12 @@ def create_user_fixture():
     return user_mapped
 
 
-# app.dependency_overrides[OAuth2PasswordRequestForm] = override_OAuth2PasswordRequestForm
-# app.dependency_overrides[authenticate_user] = override_authenticate_user
-# app.dependency_overrides[get_user] = override_get_user
-
 def test__login_for_access_token(session: Session,client: TestClient, create_user: User):
     session.add(create_user)
     session.commit()
     user_db = session.get(User, create_user.id)
-    print(user_db)
-    user_form_data = override_OAuth2PasswordRequestForm(username='fake_username', password='fake_password')
 
-    response = client.post("/token", data={"username": user_form_data.username, "password": user_form_data.password})
+    response = client.post("/token", data={"username": "Deadpond", "password": "qwe123"})
     data = response.json()
     assert response.status_code == 200
     assert data['token_type'] == 'bearer'
