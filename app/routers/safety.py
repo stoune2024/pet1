@@ -6,7 +6,7 @@ from .db import User, UserPublic
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 import jwt
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Any
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security.utils import get_authorization_scheme_param
 from jwt.exceptions import InvalidTokenError
@@ -16,7 +16,7 @@ from sqlalchemy.exc import InvalidRequestError
 from contextlib import asynccontextmanager
 
 
-templates = Jinja2Templates(directory='html_templates/')
+templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
 
 SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
 ALGORITHM = "HS256"

@@ -1,7 +1,12 @@
 from fastapi import FastAPI, HTTPException, status, Request
 from routers.pages import router as pages_router
 from routers.pages import templates
-from routers.safety import router as safety_router, verify_token, TokenData
+from routers.safety import (router as safety_router,
+                            verify_token,
+                            TokenData,
+                            OAuth2PasswordRequestForm,
+                            authenticate_user,
+                            get_user)
 from routers.db import router as db_router, get_session, UserCreate, User, pwd_context, UserUpdate, UserPublic
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
