@@ -42,10 +42,11 @@ def create_user_fixture():
     return user_mapped
 
 
-def test__login_for_access_token(session: Session,client: TestClient, create_user: User):
+def test__login_for_access_token(session: Session, client: TestClient, create_user: User):
     session.add(create_user)
     session.commit()
     user_db = session.get(User, create_user.id)
+    print(user_db)
 
     response = client.post("/token", data={"username": "Deadpond", "password": "qwe123"})
     data = response.json()

@@ -15,7 +15,6 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import InvalidRequestError
 from contextlib import asynccontextmanager
 
-
 templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
 
 SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
@@ -72,6 +71,7 @@ sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 engine = create_engine(sqlite_url)
 
+
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
@@ -82,7 +82,6 @@ def get_session():
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
-
 
 
 def get_password_hash(password):
@@ -181,13 +180,14 @@ async def verify_token(
     return token_data
 
 
-
 @asynccontextmanager
 async def lifespan(router: APIRouter):
     create_db_and_tables()
     yield
 
+
 router = APIRouter(tags=['Безопасность'], lifespan=lifespan)
+
 
 @router.post("/login")
 async def validate_login_form(
