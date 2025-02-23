@@ -148,7 +148,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 async def verify_token(
         token: Annotated[str, Depends(oauth2_scheme)],
-        request: Request
+        request: Request,
+        session: SessionDep
 ):
     """
     Функция проверки JWT-токена пользователя и возврата пользователя, если все в порядке. Функция получает
@@ -170,7 +171,7 @@ async def verify_token(
             detail="Token is invalid",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = get_user(username=token_data.username)
+    user = get_user(token_data.username, session)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
