@@ -1,7 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import create_engine, StaticPool, SQLModel, Session
-from app.main import app, OAuth2PasswordRequestForm, authenticate_user, UserCreate, pwd_context, User, get_session
+from app.main import app, OAuth2PasswordRequestForm, authenticate_user, UserCreate, pwd_context, User, \
+    get_safety_session
 from typing import Annotated
 from fastapi import Form
 
@@ -22,7 +23,8 @@ def session_fixture():
 def client_fixture(session: Session):
     def get_session_override():
         return session
-    app.dependency_overrides[get_session] = get_session_override
+
+    app.dependency_overrides[get_safety_session] = get_session_override
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
@@ -31,10 +33,10 @@ def client_fixture(session: Session):
 @pytest.fixture(name="create_user")
 def create_user_fixture():
     user = UserCreate(
-        username='Deadpond',
-        password='qwe123',
-        personal_username='Dive',
-        sympathy='Barsik'
+        username='fake_user',
+        password='fake_password',
+        personal_username='Henry',
+        sympathy='Marsik'
     )
     user_hashed_password = pwd_context.hash(user.password)
     user_extra_data = {"hashed_password": user_hashed_password}
@@ -42,13 +44,30 @@ def create_user_fixture():
     return user_mapped
 
 
-def test__login_for_access_token(session: Session, client: TestClient, create_user: User):
+def test_login_for_access_token(session: Session, client: TestClient, create_user: User):
     session.add(create_user)
     session.commit()
-    user_db = session.get(User, create_user.id)
-    print(user_db)
-
-    response = client.post("/token", data={"username": "Deadpond", "password": "qwe123"})
+    response = client.post("/token", data={"username": "fake_user", "password": "fake_password"})
     data = response.json()
     assert response.status_code == 200
     assert data['token_type'] == 'bearer'
+    assert data['access_token']
+
+
+def test_login_for_access_token_user_not_found(session: Session, client: TestClient, create_user: User):
+    session.add(create_user)
+    session.commit()
+    response = client.post("/token", data={"username": "unknown_user", "password": "unknown_password"})
+    assert response.status_code == 404
+    assert response.headers['WWW-Authenticate'] == "Bearer"
+
+
+def test_validate_login_form(session: Session, client: TestClient, create_user: User):
+    session.add(create_user)
+    session.commit()
+    response = client.post('/login', data={"username": "fake_user", "password": "fake_password"})
+    # assert response.status_code == 401
+    assert response.status_code == 303
+    # assert response.headers['WWW-Authenticate'] == "Bearer"
+    # assert '<!doctype html>' in response.text
+

@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
+templates = Jinja2Templates(directory=['html_templates', 'app/html_templates', '../app/html_templates'])
 
 
 class UserBase(SQLModel):

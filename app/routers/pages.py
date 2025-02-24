@@ -10,7 +10,7 @@ from os.path import relpath
 
 router = APIRouter(tags=['Фронтенд'])
 
-templates = Jinja2Templates(directory=['html_templates', 'app/html_templates'])
+templates = Jinja2Templates(directory=['html_templates', 'app/html_templates', '../app/html_templates'])
 
 router.mount('/static_files', StaticFiles(directory=relpath(f'{relpath(__file__)}/../../static_files')), name='static')
 
