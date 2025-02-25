@@ -6,6 +6,7 @@ from app.main import app, OAuth2PasswordRequestForm, authenticate_user, UserCrea
 from typing import Annotated
 from fastapi import Form
 
+
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
@@ -42,11 +43,13 @@ def create_user_fixture():
     user_mapped = User.model_validate(user, update=user_extra_data)
     return user_mapped
 
+
 @pytest.fixture(name='token')
 def token_fixture():
     def override_verify_token():
         fake_token = TokenData(username='fake_username')
         return fake_token
+
     app.dependency_overrides[verify_token] = override_verify_token
     yield override_verify_token()
     app.dependency_overrides.clear()
@@ -77,6 +80,7 @@ def test_validate_login_form(session: Session, client: TestClient, create_user: 
     response = client.post('/login', data={"username": "fake_user", "password": "fake_password"})
     assert response.status_code == 200
     assert '<!doctype html>' in response.text
+
 
 def test_validate_login_form_user_not_found(session: Session, client: TestClient, create_user: User, token: TokenData):
     session.add(create_user)

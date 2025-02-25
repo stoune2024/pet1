@@ -151,10 +151,7 @@ async def verify_token(
         request: Request,
         session: SessionDep
 ):
-    """
-    Функция проверки JWT-токена пользователя и возврата пользователя, если все в порядке. Функция получает
-    токен из класса OAuth2PasswordBearer. Данная функция не работает на клиенте, только в Swagger UI.
-    """
+    """ Функция проверки JWT-токена пользователя и возврата токена с username пользователя, если все в порядке. """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")

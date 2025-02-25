@@ -5,17 +5,25 @@
 		<meta name="viewport" content="width=device-width"/>
 		<meta name='author' content='Maxim Chubarov'/>
 		<meta name='description' content='У меня есть два кота - Марсик и Барсик. Барсику 14 лет, а Марсику 7 месяцев. Вот так вот.'/>
-		<title>Мои коты</title>
+		<title>{{title}}</title>
 		<link rel='shortcut icon' href="{{ url_for('static', path='/my_icon.jpg') }}" type='image/x-icon' />
 		<link 
 		href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
 		rel='stylesheer'
 		type='text/css'/>
-		<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
+		{% if title == "Барсик и Марсик" %}
+			<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
+			{% elif title == "Барсик" %}
+			<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
+			{% elif title == "Марсик" %}
+			<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
+			{% elif title == "Бонусный контент" %}
+			<link rel="stylesheet" href="{{ url_for('static', path='/bonus_page/bonus.css') }}" />
+		{% endif %}
 	</head>
 	<body>
 		<header>
-			<h1> Барсик и Марсик </h1>
+			<h1> {{header}} </h1>
 		</header>
 		<nav>
 			<ul>
