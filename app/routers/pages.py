@@ -19,16 +19,19 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.get('/', response_class=HTMLResponse)
 async def get_index(request: Request):
+    """ Эндпоинт получения главного раздела сайта """
     return templates.TemplateResponse(request=request, name="index.html")
 
 
 @router.get('/barsik', response_class=HTMLResponse)
 async def get_barsik_page(request: Request):
+    """ Эндпоинт получения раздела про Барсика """
     return templates.TemplateResponse(request=request, name="barsik.html")
 
 
 @router.get('/marsik', response_class=HTMLResponse)
 async def get_marsik_page(request: Request):
+    """ Эндпоинт получения раздела про Марсика """
     return templates.TemplateResponse(request=request, name="marsik.html")
 
 
@@ -37,6 +40,7 @@ def get_bonus_page(
         request: Request,
         user_token: Annotated[TokenData, Depends(verify_token)],
 ):
+    """ Эндпоинт просмотра раздела, требующего авторизации """
     if user_token:
         return templates.TemplateResponse(request=request, name="bonus.html")
     # return templates.TemplateResponse(request=request, name="fail_oauth.html")
