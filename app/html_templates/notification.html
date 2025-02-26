@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang='ru'>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width"/>
+		<meta name='author' content='Maxim Chubarov'/>
+		<meta name='description' content='У меня есть два кота - Марсик и Барсик. Барсику 14 лет, а Марсику 7 месяцев. Вот так вот.'/>
+		<title>Войдите в систему</title>
+		<link rel='shortcut icon' href="{{ url_for('static', path='/my_icon.jpg') }}" type='image/x-icon' />
+		<link 
+		href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Sonsie+One'
+		rel='stylesheer'
+		type='text/css'/>
+		{% if message == "Успешная авторизация!"%}
+		<link rel="stylesheet" href="{{ url_for('static', path='/suc_oauth_page/suc_oauth.css') }}" />
+		{% elif message == "Успешная регистрация!" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/suc_oauth_page/suc_oauth.css') }}" />
+		{% elif message_401 == "Пользователь не авторизован"%}
+		<link rel="stylesheet" href="{{ url_for('static', path='/fail_oauth_page/fail_oauth.css') }}" />
+		{% elif message_404 == "Пользователь не найден" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/fail_oauth_page/fail_oauth.css') }}" />
+		{% endif %}
+	</head>
+	<body>
+		<div>
+			{% if message == "Успешная авторизация!" %}
+			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}">
+			{% elif message == "Успешная регистрация!" %}
+			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}">
+			{% elif message_401 == "Пользователь не авторизован" %}
+			<img src="{{ url_for('static', path='/fail_oauth_page/red_cross.png') }}">
+			{% elif message_404 == "Пользователь не найден" %}
+			<img src="{{ url_for('static', path='/fail_oauth_page/red_cross.png') }}">
+			{% endif %}
+			<h1>{{ message }}</h1>
+			<h1>{{ message_401 }}</h1>
+			<h1>{{ message_404 }}</h1>
+			<div class='return'>
+				<a href="{{ url_for('get_index') }}">На главную</a>
+			</div>
+		</div>
+	</body>
+</html>

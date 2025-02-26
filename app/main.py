@@ -17,10 +17,7 @@ from routers.db import (router as db_router,
 
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
-
-# from contextlib import asynccontextmanager
-# from sqlmodel import SQLModel, create_engine
-
+from routers.fake_no_sql_db import *
 
 app = FastAPI()
 
@@ -34,20 +31,18 @@ app.mount('/static_files', StaticFiles(directory=relpath(f'{relpath(__file__)}/.
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     if exc.status_code == 401:
-        message = "Пользователь не авторизован"
         return templates.TemplateResponse(
             request=request,
-            name="fail_oauth.html",
+            name="notification.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            context={"message": message}
+            context={"message_401": failed_authorization_page['message_401']}
         )
     if exc.status_code == 404:
-        message = "Пользователь не найден"
         return templates.TemplateResponse(
             request=request,
-            name="fail_oauth.html",
+            name="notification.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            context={"message": message}
+            context={"message_404": failed_authorization_page['message_404']}
         )

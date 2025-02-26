@@ -27,25 +27,40 @@ async def get_index(
         return {"message": "Hello world!"}
     return templates.TemplateResponse(request=request, name="index.html", context={
         "title": index_page['title'],
-        "header": index_page['header']
+        "header": index_page['header'],
+        "nav": index_page['nav'],
+        "header2": index_page['header2'],
+        "p1": index_page['p1'],
+        "p2": index_page['p2'],
+        "about": index_page['about']
     })
 
 
 @router.get('/barsik', response_class=HTMLResponse)
 async def get_barsik_page(request: Request):
     """ Эндпоинт отображения раздела про Барсика """
-    return templates.TemplateResponse(request=request, name="barsik.html", context={
+    return templates.TemplateResponse(request=request, name="index.html", context={
         "title": barsik_page['title'],
-        "header": barsik_page['header']
+        "header": barsik_page['header'],
+        "nav": barsik_page['nav'],
+        "header2": barsik_page['header2'],
+        "p1": barsik_page['p1'],
+        "p2": barsik_page['p2'],
+        "about": barsik_page['about']
     })
 
 
 @router.get('/marsik', response_class=HTMLResponse)
 async def get_marsik_page(request: Request):
     """ Эндпоинт отображения раздела про Марсика """
-    return templates.TemplateResponse(request=request, name="marsik.html", context={
+    return templates.TemplateResponse(request=request, name="index.html", context={
         "title": marsik_page['title'],
-
+        "header": marsik_page['header'],
+        "nav": marsik_page['nav'],
+        "header2": marsik_page['header2'],
+        "p1": marsik_page['p1'],
+        "p2": marsik_page['p2'],
+        "about": marsik_page['about']
     })
 
 
@@ -56,8 +71,16 @@ def get_bonus_page(
 ):
     """ Эндпоинт просмотра раздела, требующего авторизации """
     if user_token:
-        return templates.TemplateResponse(request=request, name="bonus.html")
-    # return templates.TemplateResponse(request=request, name="fail_oauth.html")
+        return templates.TemplateResponse(request=request, name="index.html", context={
+            "title": bonus_page['title'],
+            "header": bonus_page['header'],
+            "nav": bonus_page['nav'],
+            "header2": bonus_page['header2'],
+            "p1": bonus_page['p1'],
+            "p2": bonus_page['p2'],
+            "p3": bonus_page['p3'],
+            "about": bonus_page['about']
+        })
 
 
 @router.get('/oauth', response_class=HTMLResponse)
@@ -78,6 +101,7 @@ async def get_suc_oauth_page(
         user_token: Annotated[TokenData, Depends(verify_token)]
 ):
     """ Эндпоинт уведомления об успешной авторизации """
-    context = {"username": user_token.username}
-    return templates.TemplateResponse(request=request, name="suc_oauth.html", context=context)
+    return templates.TemplateResponse(request=request, name="notification.html", context={
+        "message": successful_authorization_page['message']
+    })
 

@@ -12,13 +12,13 @@
 		rel='stylesheer'
 		type='text/css'/>
 		{% if title == "Барсик и Марсик" %}
-			<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
-			{% elif title == "Барсик" %}
-			<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
-			{% elif title == "Марсик" %}
-			<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
-			{% elif title == "Бонусный контент" %}
-			<link rel="stylesheet" href="{{ url_for('static', path='/bonus_page/bonus.css') }}" />
+		<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
+		{% elif title == "Барсик" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
+		{% elif title == "Марсик" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
+		{% elif title == "Бонусный контент" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/bonus_page/bonus.css') }}" />
 		{% endif %}
 	</head>
 	<body>
@@ -27,36 +27,89 @@
 		</header>
 		<nav>
 			<ul>
-				<li><a href="{{ url_for('get_barsik_page') }}">О Барсике</a></li>
-				<li><a href="{{ url_for('get_marsik_page') }}">О Марсике</a></li>
-				<li><a class="auth_button" href="{{ url_for('get_bonus_page') }}">Для авторизованных</a></li>
-				<li><a class="login_button" href="{{ url_for('get_oauth_page') }}">Войти в систему</a></li>
+			{% for i in nav %}
+				{% if i == "О Барсике" %}
+				<li><a href="{{ url_for('get_barsik_page') }}">{{ i }}</a></li>
+				{% elif i == "О Марсике" %}
+				<li><a href="{{ url_for('get_marsik_page') }}">{{ i }}</a></li>
+				{% elif i == "Для авторизованных" %}
+				<li><a class="auth_button" href="{{ url_for('get_bonus_page') }}">{{ i }}</a></li>
+				{% elif i == "Войти в систему" %}
+				<li><a class="login_button" href="{{ url_for('get_oauth_page') }}">{{ i }}</a></li>
+				{% elif i == "На главную" %}
+				<li><a href="{{ url_for('get_index') }}">{{ i }}</a></li>
+				{% endif %}
+			{% endfor %}
 			</ul>
 		</nav>
 		<main>
 			<article>
-				<h2> Статья про Марсика и Барсика </h2>
+				<h2> {{ header2 }} </h2>
+				{% if title == "Барсик и Марсик" %}
 				<figure>
 					<img title='Барсик лижет Марсика против шерсти' src="{{ url_for('static', path='/my_web_cats.jpg') }}"/>
 					<figcaption>
 						на фото Барсик лижет Марсика против шерсти)
 					</figcaption>
 				</figure>
-				<p>Этот веб-сайт для моего full-stack pet-проекта нужно было чем то наполнить.
-				Поэтому я не предумал ничего лучше, кроме как представить Вам своих котов.</p>
-				<p> Эта веб-страница про Марсика и Барсика. Они оба <strong>очень</strong> умны.
-				Это позволяет им жить насыщенной кошачьей жизнью. Фото слева было сделано на кухне перед приемом пищи.
-				На нем Барсик лижет Марсика <em>против шерсти</em></p>.
+				{% elif title == "Барсик" %}
+				<figure>
+				<div class='flexed'>
+					<a href="{{ url_for('static', path='/barsik_page/bars_lijet.jpg') }}">
+						<img title='Барсик лижет марсика' src="{{ url_for('static', path='/barsik_page/bars_lijet.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/barsik_page/bars_lijet2.jpg') }}">
+						<img title='Барсик лижет марсика 2' src="{{ url_for('static', path='/barsik_page/bars_lijet2.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/barsik_page/bars_shock.jpg') }}">
+						<img title='Барсик и батончик шок' src="{{ url_for('static', path='/barsik_page/bars_shock.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/barsik_page/bars_uporot.jpg') }}">
+						<img title='Барсик ничего не понимает' src="{{ url_for('static', path='/barsik_page/bars_uporot.jpg') }}"/>
+					</a>
+				</div>
+					<figcaption>
+						Коллаж про жизнь Барсика
+					</figcaption>
+				</figure>
+				{% elif title == "Марсик" %}
+				<figure>
+				<div class='flexed'>
+					<a href="{{ url_for('static', path='/marsik_page/mars_bant.jpg') }}">
+						<img title='Марсик запутался с бантиком' src="{{ url_for('static', path='/marsik_page/mars_bant.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/marsik_page/mars_draka.jpg') }}">
+						<img title='Марсик дерется с Барсиком' src="{{ url_for('static', path='/marsik_page/mars_draka.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/marsik_page/mars_pivo.jpg') }}">
+						<img title='Марсик напился' src="{{ url_for('static', path='/marsik_page/mars_pivo.jpg') }}"/>
+					</a>
+					<a href="{{ url_for('static', path='/marsik_page/mars_chto.jpg') }}">
+						<img title='Что тут происходит?' src="{{ url_for('static', path='/marsik_page/mars_chto.jpg') }}"/>
+					</a>
+				</div>
+					<figcaption>
+						Коллаж про жизнь Марсика
+					</figcaption>
+				</figure>
+				{% elif title == "Бонусный контент" %}
+				<video src="{{ url_for('static', path='/bonus_page/kus.mp4') }}" width='360' height='480' autoplay loop muted type='video/mp4'>
+					<p>Если видео не работает, значит оно не работает(.</p>
+				</video>
+				{% endif %}
+				<p>{{ p1 }}</p>
+				<p>{{ p2 }}</p>
+				<p>{{ p3 }}</p>.
 				
-				<h2 id='Подробнее'> Подробнее о котах </h2>
+				<h2 id='Подробнее'> Смотри другие разделы </h2>
 				<p> Узнать больше о Барсике с Марсиком можно перейдя по ссылкам в навигационном меню. Оно включает следующие разделы:</p>
 				<ul>
-					<li>О Барсике - краткая информация о нем</li>
-					<li>О Марсике - краткая информация о нем</li>
-					<li>Для авторизованных - раздел для пользователей, авторизованных в системе. Содержит бонусный контент.</li>
-					<li>Войти в систему - раздел с регистрацией/авторизацией</li>
+					{% for i in about %}
+					<li>{{ i }}</li>
+					{% endfor %}
 				</ul>
 			</article>
+			{% if title == "Барсик и Марсик" %}
 			<aside>
 				<h2> Рацион котов </h2>
 				<p> Обычно эти коты кушают следующую еду: </p>
@@ -68,6 +121,31 @@
 					<li>Рыбов</li>
 				</ul>
 			</aside>
+			{% elif title == "Барсик" %}
+			<aside>
+				<h2> Повадки Барсика </h2>
+				<p> Барсика можно охарактеризовать следующими выражениями: </p>
+				<ul>
+					<li>Очень громко мяукает. Будит этим по утрам.</li>
+					<li>Ласковый</li>
+					<li>На Марсика не нападает, дружелюбен.</li>
+					<li>Любимая пища - рыба.</li>
+					<li>Место рождения - Кудымкар.</li>
+				</ul>
+			</aside>
+			{% elif title == "Марсик" %}
+			<aside>
+				<h2> Повадки Марсика </h2>
+				<p> Марсика можно охарактеризовать следующим образом: </p>
+				<ul>
+					<li>Очень быстро бегает. Будит этим по утрам.</li>
+					<li>Постоянно на взводе</li>
+					<li>Агрессивен по отношению к Барсику. Все драки затевает первым.</li>
+					<li>Любимая пища - сырое мясо.</li>
+					<li>Место рождения - деревня.</li>
+				</ul>
+			</aside>
+			{% endif %}
 		</main>
 		<footer>
 			<p>©Авторские права никому не принадлежат, 2077. Все права защищены.</p>
