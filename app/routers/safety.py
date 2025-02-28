@@ -20,10 +20,6 @@ from .. import config
 
 templates = Jinja2Templates(directory=['html_templates', 'app/html_templates', '../app/html_templates'])
 
-# SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
-# ALGORITHM = "HS256"
-# ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
 
 @lru_cache
 def get_settings():
