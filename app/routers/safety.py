@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
+from functools import lru_cache
 
 import jwt
 from fastapi import APIRouter, HTTPException, status, Depends, Request
@@ -15,12 +16,18 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlmodel import create_engine, Session, select, SQLModel
 
 from .db import User
+from .. import config
 
 templates = Jinja2Templates(directory=['html_templates', 'app/html_templates', '../app/html_templates'])
 
-SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# SECRET_KEY = "d07ee9a686027cc593ced3e2a87eebc53697ca6efc3ac1a640afd0158035d714"
+# ALGORITHM = "HS256"
+# ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+
+@lru_cache
+def get_settings():
+    return config.Settings()
 
 
 class Token(BaseModel):
@@ -66,7 +73,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
-sqlite_file_name = "../database.db"
+sqlite_file_name = "database.db"
 
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
@@ -136,25 +143,30 @@ def authenticate_user(username: str, password: str, session: SessionDep):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(
+        settings: Annotated[config.Settings, Depends(get_settings)],
+        data: dict,
+        expires_delta: timedelta | None = None,
+):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     return encoded_jwt
 
 
 async def verify_token(
+        settings: Annotated[config.Settings, Depends(get_settings)],
         token: Annotated[str, Depends(oauth2_scheme)],
         request: Request,
         session: SessionDep
 ):
     """ Функция проверки JWT-токена пользователя и возврата токена с username пользователя, если все в порядке. """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         username: str = payload.get("sub")
         if username is None:
             raise HTTPException(
@@ -192,14 +204,15 @@ router = APIRouter(tags=['Безопасность'], lifespan=lifespan)
 async def validate_login_form(
         request: Request,
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        session: SessionDep
+        session: SessionDep,
+        settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     """
 Эндпоинт отвечает за обработку данных, пришедших из формы авторизации. Если пользователь успешно прошел
 аутентификацию и авторизацию JWT-токен сохраняется в куках. Происходит перенаправление на другую страницу.
 
     """
-    token = await login_for_access_token(request, form_data, session)
+    token = await login_for_access_token(request, form_data, session, settings)
     access_token = token.get("access_token")
     redirect_url = "/suc_oauth"
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -215,7 +228,8 @@ async def validate_login_form(
 async def login_for_access_token(
         request: Request,
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        session: SessionDep
+        session: SessionDep,
+        settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     """
 Эндпоинт отвечает за аутентификацию пользователя и генерацию JWT-токена. Функция работает как зависимость
@@ -229,8 +243,10 @@ async def login_for_access_token(
             detail="Could not find user",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        settings,
+        data={"sub": user.username},
+        expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

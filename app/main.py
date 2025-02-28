@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException, status, Request
-from routers.pages import router as pages_router, templates
-from routers.safety import (router as safety_router,
+from app.routers.pages import router as pages_router, templates
+from app.routers.safety import (router as safety_router,
                             verify_token,
                             TokenData,
                             OAuth2PasswordRequestForm,
                             authenticate_user,
                             get_user,
                             get_session as get_safety_session)
-from routers.db import (router as db_router,
+from app.routers.db import (router as db_router,
                         get_session as get_db_session,
                         UserCreate,
                         User,
@@ -17,7 +17,7 @@ from routers.db import (router as db_router,
 
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
-from routers.fake_no_sql_db import *
+from app.routers.fake_no_sql_db import *
 
 app = FastAPI()
 
