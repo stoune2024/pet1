@@ -1,19 +1,20 @@
-import sqlalchemy.exc
-from fastapi import APIRouter, HTTPException, status, Depends, Request
-from passlib.context import CryptContext
-from sqlmodel import create_engine, Session, select, SQLModel
-from .db import User, UserPublic
-from pydantic import BaseModel
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from typing import Annotated, Optional
+
 import jwt
-from typing import Annotated, Optional, Any
+from fastapi import APIRouter, HTTPException, status, Depends, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security.utils import get_authorization_scheme_param
-from jwt.exceptions import InvalidTokenError
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
+from jwt.exceptions import InvalidTokenError
+from passlib.context import CryptContext
+from pydantic import BaseModel
 from sqlalchemy.exc import InvalidRequestError
-from contextlib import asynccontextmanager
+from sqlmodel import create_engine, Session, select, SQLModel
+
+from .db import User
 
 templates = Jinja2Templates(directory=['html_templates', 'app/html_templates', '../app/html_templates'])
 
