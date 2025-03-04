@@ -18,6 +18,7 @@ from app.routers.db import (router as db_router,
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
 from app.routers.fake_no_sql_db import *
+from .routers.no_sql_db import redis_client
 
 app = FastAPI()
 
@@ -36,7 +37,9 @@ async def http_exception_handler(request, exc):
             name="notification.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            context={"message_401": failed_authorization_page['message_401']}
+            context={
+                "message_401": redis_client.hget('failed_authorization_page', 'message_401')
+            }
         )
     if exc.status_code == 404:
         return templates.TemplateResponse(
@@ -44,5 +47,7 @@ async def http_exception_handler(request, exc):
             name="notification.html",
             status_code=exc.status_code,
             headers=exc.headers,
-            context={"message_404": failed_authorization_page['message_404']}
+            context={
+                "message_404": redis_client.hget('failed_authorization_page', 'message_404')
+            }
         )

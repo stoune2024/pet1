@@ -9,7 +9,8 @@ from passlib.context import CryptContext
 from contextlib import asynccontextmanager
 from os.path import relpath
 from fastapi.staticfiles import StaticFiles
-from .fake_no_sql_db import successful_registration_page
+from .no_sql_db import redis_client
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -90,7 +91,7 @@ def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, reques
     session.commit()
     session.refresh(db_user)
     return templates.TemplateResponse(request=request, name="notification.html", context={
-        "message": successful_registration_page['message']
+        "message": redis_client.hget('successful_registration_page', 'message')
     })
 
 

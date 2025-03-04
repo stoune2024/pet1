@@ -28,7 +28,9 @@
 		<nav>
 			<ul>
 			{% for i in nav %}
-				{% if i == "О Барсике" %}
+				{% if i == "На главную" %}
+				<li><a href="{{ url_for('get_index') }}">{{ i }}</a></li>
+				{% elif i == "О Барсике" %}
 				<li><a href="{{ url_for('get_barsik_page') }}">{{ i }}</a></li>
 				{% elif i == "О Марсике" %}
 				<li><a href="{{ url_for('get_marsik_page') }}">{{ i }}</a></li>
@@ -36,8 +38,6 @@
 				<li><a class="auth_button" href="{{ url_for('get_bonus_page') }}">{{ i }}</a></li>
 				{% elif i == "Войти в систему" %}
 				<li><a class="login_button" href="{{ url_for('get_oauth_page') }}">{{ i }}</a></li>
-				{% elif i == "На главную" %}
-				<li><a href="{{ url_for('get_index') }}">{{ i }}</a></li>
 				{% endif %}
 			{% endfor %}
 			</ul>

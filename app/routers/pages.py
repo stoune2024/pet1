@@ -7,6 +7,7 @@ from .safety import verify_token, TokenData
 from fastapi.staticfiles import StaticFiles
 from os.path import relpath
 from .fake_no_sql_db import *
+from .no_sql_db import redis_client
 
 router = APIRouter(tags=['Фронтенд'])
 
@@ -26,13 +27,13 @@ async def get_index(
     if token:
         return {"message": "Hello world!"}
     return templates.TemplateResponse(request=request, name="index.html", context={
-        "title": index_page['title'],
-        "header": index_page['header'],
-        "nav": index_page['nav'],
-        "header2": index_page['header2'],
-        "p1": index_page['p1'],
-        "p2": index_page['p2'],
-        "about": index_page['about']
+        "title": redis_client.hget('index_page', 'title'),
+        "header": redis_client.hget('index_page', 'header'),
+        "nav": redis_client.lrange('index_page_nav', 0, -1),
+        "header2": redis_client.hget('index_page', 'header2'),
+        "p1": redis_client.hget('index_page', 'p1'),
+        "p2": redis_client.hget('index_page', 'p2'),
+        "about": redis_client.lrange('index_page_about', 0, -1)
     })
 
 
@@ -40,13 +41,13 @@ async def get_index(
 async def get_barsik_page(request: Request):
     """ Эндпоинт отображения раздела про Барсика """
     return templates.TemplateResponse(request=request, name="index.html", context={
-        "title": barsik_page['title'],
-        "header": barsik_page['header'],
-        "nav": barsik_page['nav'],
-        "header2": barsik_page['header2'],
-        "p1": barsik_page['p1'],
-        "p2": barsik_page['p2'],
-        "about": barsik_page['about']
+        "title": redis_client.hget('barsik_page', 'title'),
+        "header": redis_client.hget('barsik_page', 'header'),
+        "nav": redis_client.lrange('barsik_page_nav', 0, -1),
+        "header2": redis_client.hget('barsik_page', 'header2'),
+        "p1": redis_client.hget('barsik_page', 'p1'),
+        "p2": redis_client.hget('barsik_page', 'p2'),
+        "about": redis_client.lrange('barsik_page_about', 0, -1)
     })
 
 
@@ -54,13 +55,13 @@ async def get_barsik_page(request: Request):
 async def get_marsik_page(request: Request):
     """ Эндпоинт отображения раздела про Марсика """
     return templates.TemplateResponse(request=request, name="index.html", context={
-        "title": marsik_page['title'],
-        "header": marsik_page['header'],
-        "nav": marsik_page['nav'],
-        "header2": marsik_page['header2'],
-        "p1": marsik_page['p1'],
-        "p2": marsik_page['p2'],
-        "about": marsik_page['about']
+        "title": redis_client.hget('marsik_page', 'title'),
+        "header": redis_client.hget('marsik_page', 'header'),
+        "nav": redis_client.lrange('marsik_page_nav', 0, -1),
+        "header2": redis_client.hget('marsik_page', 'header2'),
+        "p1": redis_client.hget('marsik_page', 'p1'),
+        "p2": redis_client.hget('marsik_page', 'p2'),
+        "about": redis_client.lrange('marsik_page_about', 0, -1)
     })
 
 
@@ -72,14 +73,14 @@ def get_bonus_page(
     """ Эндпоинт просмотра раздела, требующего авторизации """
     if user_token:
         return templates.TemplateResponse(request=request, name="index.html", context={
-            "title": bonus_page['title'],
-            "header": bonus_page['header'],
-            "nav": bonus_page['nav'],
-            "header2": bonus_page['header2'],
-            "p1": bonus_page['p1'],
-            "p2": bonus_page['p2'],
-            "p3": bonus_page['p3'],
-            "about": bonus_page['about']
+            "title": redis_client.hget('bonus_page', 'title'),
+            "header": redis_client.hget('bonus_page', 'header'),
+            "nav": redis_client.lrange('bonus_page_nav', 0, -1),
+            "header2": redis_client.hget('bonus_page', 'header2'),
+            "p1": redis_client.hget('bonus_page', 'p1'),
+            "p2": redis_client.hget('bonus_page', 'p2'),
+            "p3": redis_client.hget('bonus_page', 'p3'),
+            "about": redis_client.lrange('bonus_page_about', 0, -1)
         })
 
 
@@ -102,6 +103,6 @@ async def get_suc_oauth_page(
 ):
     """ Эндпоинт уведомления об успешной авторизации """
     return templates.TemplateResponse(request=request, name="notification.html", context={
-        "message": successful_authorization_page['message']
+        "message": redis_client.hget('successful_authorization_page', 'message')
     })
 

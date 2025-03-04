@@ -10,16 +10,48 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-redis_client.hset('user-session:123', mapping={
-    'name': 'John',
-    "surname": 'Smith',
-    "company": 'Redis',
-    "age": 29,
-    "list": ['1', 'sdf', 'asd', 'zxcda']
-})
+# Запись словаря по ключу
+# redis_client.hset('user-session:123', mapping={
+#     'name': 'John',
+#     "surname": 'Smith',
+#     "company": 'Redis',
+#     "age": 36,
+# })
 
-data = redis_client.hgetall('user-session:123')
+# Запись списка по ключу
+# redis_client.lpush('my_list', 'orange', 'apple', 'watermelon')
+
+# Чтение словаря по ключу
+# data = redis_client.hgetall('user-session:123')
+
+# Чтение списка по ключу
+# data_2 = redis_client.lrange('my_list', 0, -1)
+
+# Запись списка по ключу. Альтернативный вариант
+# redis_client.lpush('index_page_nav', ", ".join(index_page_nav))
 
 
 
-print(data)
+# for i in index_page_nav:
+#     redis_client.lpush('index_page_nav', i)
+#
+# for i in index_page_about:
+#     redis_client.lpush('index_page_about', i)
+#
+# for i in barsik_page_nav:
+#     redis_client.lpush('barsik_page_nav', i)
+#
+# for i in barsik_page_about:
+#     redis_client.lpush('barsik_page_about', i)
+#
+# for i in marsik_page_nav:
+#     redis_client.lpush('marsik_page_nav', i)
+#
+# for i in marsik_page_about:
+#     redis_client.lpush('marsik_page_about', i)
+#
+# for i in bonus_page_nav:
+#     redis_client.lpush('bonus_page_nav', i)
+#
+# for i in bonus_page_about:
+#     redis_client.lpush('bonus_page_about', i)
