@@ -55,3 +55,7 @@ redis_client = redis.Redis(
 #
 # for i in bonus_page_about:
 #     redis_client.lpush('bonus_page_about', i)
+
+# res = redis_client.lrange('marsik_page_nav_verif',0,-1)
+# redis_client.rpush('marsik_page_nav_verif', 'О Барсике', 'На главную', 'Кусь Барсика', 'Настройки', 'Log Out')
+# print(res)

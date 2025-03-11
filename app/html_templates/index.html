@@ -13,6 +13,8 @@
 		type='text/css'/>
 		{% if title == "Барсик и Марсик" %}
 		<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
+		{% elif title == "Настройки" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}" />
 		{% elif title == "Барсик" %}
 		<link rel="stylesheet" href="{{ url_for('static', path='/barsik_page/barsik_style.css') }}" />
 		{% elif title == "Марсик" %}
@@ -38,6 +40,12 @@
 				<li><a class="auth_button" href="{{ url_for('get_bonus_page') }}">{{ i }}</a></li>
 				{% elif i == "Войти в систему" %}
 				<li><a class="login_button" href="{{ url_for('get_oauth_page') }}">{{ i }}</a></li>
+				{% elif i == "Log Out" %}
+				<li><a class="log_out_button" href="{{ url_for('log_out') }}">{{ i }}</a></li>
+				{% elif i == "Настройки" %}
+				<li><a class="settings_button" href="{{ url_for('get_settings_page') }}">{{ i }}</a></li>
+				{% elif i == "Кусь Барсика" %}
+				<li><a class="auth_button" href="{{ url_for('get_bonus_page') }}">{{ i }}</a></li>
 				{% endif %}
 			{% endfor %}
 			</ul>
@@ -96,11 +104,54 @@
 				<video src="{{ url_for('static', path='/bonus_page/kus.mp4') }}" width='360' height='480' autoplay loop muted type='video/mp4'>
 					<p>Если видео не работает, значит оно не работает(.</p>
 				</video>
+				{% elif title == "Настройки" %}
+				<form action="/settings/" method="get">
+					<h2>Информация о пользователе</h2>
+					<fieldset>
+						<legend><p>Основная информация</p></legend>
+						<p>
+							<label for="name">Логин:</label>
+							<input type="text" id="name" name="username" readonly value=' {{ username }} ' />
+						</p>
+						<p>
+							<label for="mail">Электронная почта:</label>
+							<input type="email" id="mail" name="usermail" readonly value=' {{ usermail }} '>
+						</p>
+					</fieldset>
+					<fieldset>
+						<legend><p>Дополнительная информация</p></legend>
+						<p>
+							<label for="personal_name">Имя:</label>
+							<input type="text" id="personal_name" name="personal_username" readonly value=' {{ personal_username }} ' />
+						</p>
+						<p>
+							<label for="sex">Пол:</label>
+							<input type="text" id="sex" name="sex" readonly value=' {{ sex }} ' />
+						</p>
+						<p>
+							<label for="birth">Дата рождения:</label>
+							<input type="text" id="birth" name="birthdate" readonly value=' {{ birthdate }} '>
+						</p>
+						<p>
+							<label for="sympathy">Фаворит:</label>
+							<input id="sympathy" name="sympathy" readonly value=' {{ sympathy }} '>
+						</p>
+					</fieldset>
+				</form>
+				<a href=" {{ url_for('get_settings_update_page') }} ">
+					<p class='button'>
+						<button>Изменить</button>
+					</p>
+				</a>
+				{% elif title == "Настройки профиля" %}
+
+
+
 				{% endif %}
 				<p>{{ p1 }}</p>
 				<p>{{ p2 }}</p>
 				<p>{{ p3 }}</p>.
-				
+
 				<h2 id='Подробнее'> Смотри другие разделы </h2>
 				<p> Узнать больше о Барсике с Марсиком можно перейдя по ссылкам в навигационном меню. Оно включает следующие разделы:</p>
 				<ul>

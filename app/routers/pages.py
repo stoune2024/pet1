@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-from .safety import verify_token, TokenData
+from .safety import verify_token, TokenData, get_user, SessionDep
 from fastapi.staticfiles import StaticFiles
 from os.path import relpath
 from .fake_no_sql_db import *
@@ -25,7 +25,16 @@ async def get_index(
     """ Эндпоинт отображения главного раздела сайта """
     token = request.cookies.get('access-token')
     if token:
-        return {"message": "Hello world!"}
+        return templates.TemplateResponse(request=request, name='index.html', context={
+            "title": redis_client.get('index_page_verif'),
+            "header": redis_client.hget('index_page', 'header'),
+            "nav": redis_client.lrange('index_page_nav_verif', 0, -1),
+            "header2": redis_client.hget('index_page', 'header2'),
+            "p1": redis_client.hget('index_page', 'p1'),
+            "p2": redis_client.hget('index_page', 'p2'),
+            "about": redis_client.lrange('index_page_about', 0, -1)
+
+        })
     return templates.TemplateResponse(request=request, name="index.html", context={
         "title": redis_client.hget('index_page', 'title'),
         "header": redis_client.hget('index_page', 'header'),
@@ -40,30 +49,51 @@ async def get_index(
 @router.get('/barsik', response_class=HTMLResponse)
 async def get_barsik_page(request: Request):
     """ Эндпоинт отображения раздела про Барсика """
+    token = request.cookies.get('access-token')
+    if token:
+        return templates.TemplateResponse(request=request, name="index.html", context={
+            "title": redis_client.hget('barsik_page', 'title'),
+            "header": redis_client.hget('barsik_page', 'header'),
+            "nav": redis_client.lrange('barsik_page_nav_verif', 0, -1),
+            "header2": redis_client.hget('barsik_page', 'header2'),
+            "p1": redis_client.hget('barsik_page', 'p1'),
+            "p2": redis_client.hget('barsik_page', 'p2'),
+            "about": redis_client.lrange('barsik_page_about', 0, -1)
+        })
     return templates.TemplateResponse(request=request, name="index.html", context={
-        "title": redis_client.hget('barsik_page', 'title'),
-        "header": redis_client.hget('barsik_page', 'header'),
-        "nav": redis_client.lrange('barsik_page_nav', 0, -1),
-        "header2": redis_client.hget('barsik_page', 'header2'),
-        "p1": redis_client.hget('barsik_page', 'p1'),
-        "p2": redis_client.hget('barsik_page', 'p2'),
-        "about": redis_client.lrange('barsik_page_about', 0, -1)
-    })
+            "title": redis_client.hget('barsik_page', 'title'),
+            "header": redis_client.hget('barsik_page', 'header'),
+            "nav": redis_client.lrange('barsik_page_nav', 0, -1),
+            "header2": redis_client.hget('barsik_page', 'header2'),
+            "p1": redis_client.hget('barsik_page', 'p1'),
+            "p2": redis_client.hget('barsik_page', 'p2'),
+            "about": redis_client.lrange('barsik_page_about', 0, -1)
+        })
 
 
 @router.get('/marsik', response_class=HTMLResponse)
 async def get_marsik_page(request: Request):
     """ Эндпоинт отображения раздела про Марсика """
+    token = request.cookies.get('access-token')
+    if token:
+        return templates.TemplateResponse(request=request, name="index.html", context={
+            "title": redis_client.hget('marsik_page', 'title'),
+            "header": redis_client.hget('marsik_page', 'header'),
+            "nav": redis_client.lrange('marsik_page_nav_verif', 0, -1),
+            "header2": redis_client.hget('marsik_page', 'header2'),
+            "p1": redis_client.hget('marsik_page', 'p1'),
+            "p2": redis_client.hget('marsik_page', 'p2'),
+            "about": redis_client.lrange('marsik_page_about', 0, -1)
+        })
     return templates.TemplateResponse(request=request, name="index.html", context={
-        "title": redis_client.hget('marsik_page', 'title'),
-        "header": redis_client.hget('marsik_page', 'header'),
-        "nav": redis_client.lrange('marsik_page_nav', 0, -1),
-        "header2": redis_client.hget('marsik_page', 'header2'),
-        "p1": redis_client.hget('marsik_page', 'p1'),
-        "p2": redis_client.hget('marsik_page', 'p2'),
-        "about": redis_client.lrange('marsik_page_about', 0, -1)
-    })
-
+            "title": redis_client.hget('marsik_page', 'title'),
+            "header": redis_client.hget('marsik_page', 'header'),
+            "nav": redis_client.lrange('marsik_page_nav', 0, -1),
+            "header2": redis_client.hget('marsik_page', 'header2'),
+            "p1": redis_client.hget('marsik_page', 'p1'),
+            "p2": redis_client.hget('marsik_page', 'p2'),
+            "about": redis_client.lrange('marsik_page_about', 0, -1)
+        })
 
 @router.get('/bonus', response_class=HTMLResponse)
 def get_bonus_page(
@@ -106,3 +136,49 @@ async def get_suc_oauth_page(
         "message": redis_client.hget('successful_authorization_page', 'message')
     })
 
+@router.get('/log_out', response_class=HTMLResponse)
+async def log_out(
+        request: Request,
+        response: Response
+):
+    response = templates.TemplateResponse(request=request, name='notification.html', context={
+        "message": redis_client.get('log_out_message')
+    })
+    response.delete_cookie(key='access-token')
+    return response
+
+@router.get('/settings', response_class=HTMLResponse)
+async def get_settings_page(
+        request: Request,
+        user_token: Annotated[TokenData, Depends(verify_token)],
+        session: SessionDep
+):
+    user = get_user(user_token.username,session )
+    if user_token:
+        return templates.TemplateResponse(request=request, name='index.html', context={
+            "title": redis_client.get('settings_title'),
+            "header": redis_client.get('settings_title'),
+            "nav": redis_client.lrange('settings_page_nav_verif', 0, -1),
+            "username": user.username,
+            "usermail": user.usermail,
+            "personal_username": user.personal_username,
+            "sex": user.sex,
+            "birthdate": user.birthdate,
+            "sympathy": user.sympathy,
+            "about": redis_client.lrange('settings_page_about', 0, -1)
+        })
+
+
+
+@router.get('/settings_update')
+async def get_settings_update_page(
+        request: Request,
+        user_token: Annotated[TokenData, Depends(verify_token)],
+):
+    if user_token:
+        return templates.TemplateResponse(request=request, name='index.html', context={
+                "title": redis_client.get('settings_update_title'),
+                "header": redis_client.get('settings_title'),
+                "nav": redis_client.lrange('settings_page_nav_verif', 0, -1),
+                "about": redis_client.lrange('settings_page_about', 0, -1)
+            })

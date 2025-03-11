@@ -132,6 +132,24 @@ figcaption {
 	background:rgba(255, 184, 128,0.6);
 }
 
+/* Стили для страницы "Настройки" */
+
+/* Выравнивание полей */
+input {
+	float:right;
+}
+
+.button {
+	text-align:center;
+}
+
+button {
+	width:150px;
+	height:30px;
+}
+
+
+
 /*Мобильная версия страницы*/
 @media screen and (max-width:850px){
     main {
