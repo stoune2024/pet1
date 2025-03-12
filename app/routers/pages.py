@@ -61,14 +61,14 @@ async def get_barsik_page(request: Request):
             "about": redis_client.lrange('barsik_page_about', 0, -1)
         })
     return templates.TemplateResponse(request=request, name="index.html", context={
-            "title": redis_client.hget('barsik_page', 'title'),
-            "header": redis_client.hget('barsik_page', 'header'),
-            "nav": redis_client.lrange('barsik_page_nav', 0, -1),
-            "header2": redis_client.hget('barsik_page', 'header2'),
-            "p1": redis_client.hget('barsik_page', 'p1'),
-            "p2": redis_client.hget('barsik_page', 'p2'),
-            "about": redis_client.lrange('barsik_page_about', 0, -1)
-        })
+        "title": redis_client.hget('barsik_page', 'title'),
+        "header": redis_client.hget('barsik_page', 'header'),
+        "nav": redis_client.lrange('barsik_page_nav', 0, -1),
+        "header2": redis_client.hget('barsik_page', 'header2'),
+        "p1": redis_client.hget('barsik_page', 'p1'),
+        "p2": redis_client.hget('barsik_page', 'p2'),
+        "about": redis_client.lrange('barsik_page_about', 0, -1)
+    })
 
 
 @router.get('/marsik', response_class=HTMLResponse)
@@ -86,14 +86,15 @@ async def get_marsik_page(request: Request):
             "about": redis_client.lrange('marsik_page_about', 0, -1)
         })
     return templates.TemplateResponse(request=request, name="index.html", context={
-            "title": redis_client.hget('marsik_page', 'title'),
-            "header": redis_client.hget('marsik_page', 'header'),
-            "nav": redis_client.lrange('marsik_page_nav', 0, -1),
-            "header2": redis_client.hget('marsik_page', 'header2'),
-            "p1": redis_client.hget('marsik_page', 'p1'),
-            "p2": redis_client.hget('marsik_page', 'p2'),
-            "about": redis_client.lrange('marsik_page_about', 0, -1)
-        })
+        "title": redis_client.hget('marsik_page', 'title'),
+        "header": redis_client.hget('marsik_page', 'header'),
+        "nav": redis_client.lrange('marsik_page_nav', 0, -1),
+        "header2": redis_client.hget('marsik_page', 'header2'),
+        "p1": redis_client.hget('marsik_page', 'p1'),
+        "p2": redis_client.hget('marsik_page', 'p2'),
+        "about": redis_client.lrange('marsik_page_about', 0, -1)
+    })
+
 
 @router.get('/bonus', response_class=HTMLResponse)
 def get_bonus_page(
@@ -136,6 +137,7 @@ async def get_suc_oauth_page(
         "message": redis_client.hget('successful_authorization_page', 'message')
     })
 
+
 @router.get('/log_out', response_class=HTMLResponse)
 async def log_out(
         request: Request,
@@ -147,13 +149,14 @@ async def log_out(
     response.delete_cookie(key='access-token')
     return response
 
+
 @router.get('/settings', response_class=HTMLResponse)
 async def get_settings_page(
         request: Request,
         user_token: Annotated[TokenData, Depends(verify_token)],
         session: SessionDep
 ):
-    user = get_user(user_token.username,session )
+    user = get_user(user_token.username, session)
     if user_token:
         return templates.TemplateResponse(request=request, name='index.html', context={
             "title": redis_client.get('settings_title'),
@@ -169,7 +172,6 @@ async def get_settings_page(
         })
 
 
-
 @router.get('/settings_update')
 async def get_settings_update_page(
         request: Request,
@@ -177,8 +179,8 @@ async def get_settings_update_page(
 ):
     if user_token:
         return templates.TemplateResponse(request=request, name='index.html', context={
-                "title": redis_client.get('settings_update_title'),
-                "header": redis_client.get('settings_title'),
-                "nav": redis_client.lrange('settings_page_nav_verif', 0, -1),
-                "about": redis_client.lrange('settings_page_about', 0, -1)
-            })
+            "title": redis_client.get('settings_update_title'),
+            "header": redis_client.get('settings_update_title'),
+            "nav": redis_client.lrange('settings_page_nav_verif', 0, -1),
+            "about": redis_client.lrange('settings_page_about', 0, -1)
+        })
