@@ -21,6 +21,8 @@
 		<link rel="stylesheet" href="{{ url_for('static', path='/fail_oauth_page/fail_oauth.css') }}" />
 		{% elif message == "Вы успешно вышли из учетной записи!" %}
 		<link rel="stylesheet" href="{{ url_for('static', path='/suc_oauth_page/suc_oauth.css') }}" />
+		{% elif message == "Настройки успешно изменены" %}
+		<link rel="stylesheet" href="{{ url_for('static', path='/suc_oauth_page/suc_oauth.css') }}" />
 		{% endif %}
 	</head>
 	<body>
@@ -30,6 +32,8 @@
 			{% elif message == "Успешная регистрация!" %}
 			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}">
 			{% elif message == "Вы успешно вышли из учетной записи!" %}
+			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}">
+			{% elif message == "Настройки успешно изменены" %}
 			<img src="{{ url_for('static', path='/suc_oauth_page/galka.png') }}">
 			{% elif message_401 == "Пользователь не авторизован" %}
 			<img src="{{ url_for('static', path='/fail_oauth_page/red_cross.png') }}">

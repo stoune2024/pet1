@@ -106,6 +106,9 @@ footer {
   margin-top: 10px;
 }
 
+footer span {
+    float:right;
+}
 
 
 #Подробнее {
@@ -148,6 +151,9 @@ button {
 	height:30px;
 }
 
+select {
+    float:right;
+}
 
 
 /*Мобильная версия страницы*/

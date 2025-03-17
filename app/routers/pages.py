@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Request, Depends, Response
+from fastapi import APIRouter, Request, Depends, Response, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-from .safety import verify_token, TokenData, get_user, SessionDep
+from .safety import verify_token, TokenData, get_user, SessionDep, pwd_context
 from fastapi.staticfiles import StaticFiles
 from os.path import relpath
 from .fake_no_sql_db import *
 from .no_sql_db import redis_client
+from .db import User, UserUpdate
 
 router = APIRouter(tags=['Фронтенд'])
 
@@ -168,7 +169,8 @@ async def get_settings_page(
             "sex": user.sex,
             "birthdate": user.birthdate,
             "sympathy": user.sympathy,
-            "about": redis_client.lrange('settings_page_about', 0, -1)
+            "about": redis_client.lrange('settings_page_about', 0, -1),
+            "user_id": user.id,
         })
 
 
@@ -176,11 +178,48 @@ async def get_settings_page(
 async def get_settings_update_page(
         request: Request,
         user_token: Annotated[TokenData, Depends(verify_token)],
+        session: SessionDep
 ):
+    user = get_user(user_token.username, session)
     if user_token:
         return templates.TemplateResponse(request=request, name='index.html', context={
             "title": redis_client.get('settings_update_title'),
             "header": redis_client.get('settings_update_title'),
             "nav": redis_client.lrange('settings_page_nav_verif', 0, -1),
-            "about": redis_client.lrange('settings_page_about', 0, -1)
+            "about": redis_client.lrange('settings_page_about', 0, -1),
+            "username": user.username,
+            "usermail": user.usermail,
+            "personal_username": user.personal_username,
+            "birthdate": user.birthdate,
+            "user_id": user.id,
+            "sympathy": user.sympathy,
         })
+
+
+@router.post("/users/{user_id}")
+def update_user(
+        user_id: int,
+        user: Annotated[UserUpdate, Form()],
+        session: SessionDep,
+        request: Request
+):
+    """
+Функция обновления данных конкретного пользователя в БД. Является альтернативой
+    """
+    user_db = session.get(User, user_id)
+    if not user_db:
+        raise HTTPException(status_code=404, detail="Oops.. User not found")
+    user_data = user.model_dump(exclude_unset=True)
+    extra_data = {}
+    if "password" in user_data:
+        password = user_data["password"]
+        hashed_password = pwd_context.hash(password)
+        extra_data["hashed_password"] = hashed_password
+    user_db.sqlmodel_update(user_data, update=extra_data)
+    session.add(user_db)
+    session.commit()
+    session.refresh(user_db)
+    return templates.TemplateResponse(request=request, name="notification.html", context={
+        "message": redis_client.get('settings_changed')
+    })
+

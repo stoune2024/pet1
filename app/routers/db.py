@@ -113,15 +113,15 @@ def read_users(
     return users
 
 
-# Работает. Не реализована
-@router.patch("/users/{user_id}", response_model=UserPublic)
-def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: SessionDep):
+# Работает. Не реализована. Не поддерживается HTML5 формой.
+@router.patch("/users/{user_id}")
+def update_user(
+        user_id: int,
+        user: Annotated[UserUpdate, Form()],
+        session: SessionDep,
+):
     """
 Функция обновления данных конкретного пользователя в БД. Функция работает, но пока не реализована на практике.
-    :param user_id: Параметр пути, в то же время являющийся id в БД
-    :param user: Тело запроса с данными для обновления
-    :param session: Сессия
-    :return: Обновленный пользователь
     """
     user_db = session.get(User, user_id)
     if not user_db:
@@ -144,9 +144,7 @@ def update_user(user_id: int, user: Annotated[UserUpdate, Form()], session: Sess
 def delete_user(user_id: int, session: SessionDep):
     """
 Функция удаления пользователя из БД. Функция работает, но пока не реализована на практике.
-    :param user_id: Параметр пути, в то же время являющийся id в БД
-    :param session: Сессия
-    :return: Подтверждение удаления
+
     """
     user = session.get(User, user_id)
     if not user:
