@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, status, Request
 from app.routers.pages import router as pages_router, templates
 from app.routers.safety import (router as safety_router,
@@ -17,7 +18,6 @@ from app.routers.db import (router as db_router,
 
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
-from app.routers.fake_no_sql_db import *
 from .routers.no_sql_db import redis_client
 
 app = FastAPI()
@@ -51,3 +51,6 @@ async def http_exception_handler(request, exc):
                 "message_404": redis_client.hget('failed_authorization_page', 'message_404')
             }
         )
+
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="127.0.0.1", port=8000)

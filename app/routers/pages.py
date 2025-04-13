@@ -6,7 +6,6 @@ from fastapi.security import OAuth2PasswordBearer
 from .safety import verify_token, TokenData, get_user, SessionDep, pwd_context
 from fastapi.staticfiles import StaticFiles
 from os.path import relpath
-from .fake_no_sql_db import *
 from .no_sql_db import redis_client
 from .db import User, UserUpdate
 

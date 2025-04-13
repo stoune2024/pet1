@@ -1,13 +1,13 @@
 import redis
 from ..config import settings
-from .fake_no_sql_db import *
 
 # Подключение к redis
 redis_client = redis.Redis(
     host=settings.redis_host,
     port=settings.redis_port,
     db=0,
-    decode_responses=True
+    decode_responses=True,
+    password=settings.redis_password
 )
 
 # Запись словаря по ключу
