@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     redis_port: int                     # Порт для подключения к Redis
     redis_password: str                 # Пароль для подключения к Redis
     base_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # Абсолютная корневая директория проекта
+    docker_redis_host: str              # Имя контейнера с Redis
 
     # Указание файла с переменными окружения
     model_config = SettingsConfigDict(env_file=".env")

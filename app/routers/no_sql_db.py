@@ -3,12 +3,15 @@ from ..config import settings
 
 # Подключение к redis
 redis_client = redis.Redis(
-    host=settings.redis_host,
+    # host=settings.redis_host,
+    host=settings.docker_redis_host,
     port=settings.redis_port,
     db=0,
     decode_responses=True,
     password=settings.redis_password
 )
+
+# redis://redis@localhost:6379/0
 
 # Запись словаря по ключу
 # redis_client.hset('user-session:123', mapping={
