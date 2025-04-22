@@ -15,6 +15,6 @@ class Settings(BaseSettings):
     docker_redis_host: str              # Имя контейнера с Redis
 
     # Указание файла с переменными окружения
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=f"{os.path.dirname(os.path.abspath(__file__))}/../.env")
 
 settings = Settings()
