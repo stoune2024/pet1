@@ -1,3 +1,4 @@
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app, verify_token, TokenData
@@ -64,6 +65,15 @@ def test_get_suc_oauth_page(client: TestClient, token: TokenData):
 
 def test_log_out_page(client: TestClient):
     response = client.get('/log_out')
+    response.cookies.set('access-token', 'fake_cookie')
+    response = client.get('/log_out')
+    response.cookies.delete('access-token')
     assert response.status_code == 200
     assert '<!doctype html>' in response.text
-    assert response.cookies['access-token'] != True
+    assert response.cookies.get('access-token') is None
+
+
+def test_get_settings_page(client: TestClient, token: TokenData):
+    response = client.get('/settings')
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
