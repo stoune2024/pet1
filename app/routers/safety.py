@@ -114,6 +114,7 @@ def get_user(username: str, session: SessionDep):
     :return: Запись о пользователе из БД
     """
     try:
+        print(username)
         user = session.exec(select(User).where(User.username == username)).one()
         return user
     except InvalidRequestError:

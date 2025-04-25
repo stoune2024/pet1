@@ -1,7 +1,19 @@
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app, verify_token, TokenData
+from app.main import app, verify_token, TokenData, UserCreate, pwd_context, User, UserBase
+from sqlmodel import create_engine, StaticPool, SQLModel, Session
+
+@pytest.fixture(name="session")
+def session_fixture():
+    engine = create_engine(
+        "sqlite:///",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool
+    )
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        yield session
 
 
 @pytest.fixture(name='client')
@@ -10,15 +22,29 @@ def client_fixture():
     return client
 
 
+@pytest.fixture(name="create_user")
+def create_user_fixture():
+    user = UserCreate(
+        username='Deadpond',
+        password='qwe123',
+        personal_username='Dive',
+        sympathy='Barsik'
+    )
+    user_hashed_password = pwd_context.hash(user.password)
+    user_extra_data = {"hashed_password": user_hashed_password}
+    user_mapped = User.model_validate(user, update=user_extra_data)
+    return user_mapped
+
 @pytest.fixture(name='token')
 def token_fixture():
     def override_verify_token():
-        fake_token = TokenData(username='fake_username')
+        fake_token = TokenData(username='Deadpond')
         return fake_token
 
     app.dependency_overrides[verify_token] = override_verify_token
     yield override_verify_token()
     app.dependency_overrides.clear()
+
 
 
 def test_get_index(client: TestClient):
@@ -73,7 +99,15 @@ def test_log_out_page(client: TestClient):
     assert response.cookies.get('access-token') is None
 
 
-def test_get_settings_page(client: TestClient, token: TokenData):
+def test_get_settings_page(
+                            client: TestClient,
+                            session: Session,
+                           create_user: User,
+                           token: TokenData
+                           ):
+    session.add(create_user)
+    session.commit()
     response = client.get('/settings')
+    # data = response.json()
     assert response.status_code == 200
     assert '<!doctype html>' in response.text

@@ -154,8 +154,7 @@ async def log_out(
 async def get_settings_page(
         request: Request,
         user_token: Annotated[TokenData, Depends(verify_token)],
-        session: SessionDep
-):
+        session: SessionDep):
     user = get_user(user_token.username, session)
     if user_token:
         return templates.TemplateResponse(request=request, name='index.html', context={

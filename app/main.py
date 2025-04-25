@@ -14,7 +14,8 @@ from app.routers.db import (router as db_router,
                         User,
                         pwd_context,
                         UserUpdate,
-                        UserPublic)
+                        UserPublic,
+                        UserBase)
 
 from fastapi.staticfiles import StaticFiles
 from os.path import realpath, relpath
