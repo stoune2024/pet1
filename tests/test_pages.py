@@ -1,8 +1,10 @@
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app, verify_token, TokenData, UserCreate, pwd_context, User, UserBase
+from app.main import app, verify_token, TokenData, UserCreate, pwd_context, User, UserBase, get_safety_session, \
+    UserUpdate
 from sqlmodel import create_engine, StaticPool, SQLModel, Session
+
 
 @pytest.fixture(name="session")
 def session_fixture():
@@ -16,10 +18,15 @@ def session_fixture():
         yield session
 
 
-@pytest.fixture(name='client')
-def client_fixture():
+@pytest.fixture(name="client")
+def client_fixture(session: Session):
+    def get_session_override():
+        return session
+
+    app.dependency_overrides[get_safety_session] = get_session_override
     client = TestClient(app)
-    return client
+    yield client
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture(name="create_user")
@@ -35,6 +42,7 @@ def create_user_fixture():
     user_mapped = User.model_validate(user, update=user_extra_data)
     return user_mapped
 
+
 @pytest.fixture(name='token')
 def token_fixture():
     def override_verify_token():
@@ -44,7 +52,6 @@ def token_fixture():
     app.dependency_overrides[verify_token] = override_verify_token
     yield override_verify_token()
     app.dependency_overrides.clear()
-
 
 
 def test_get_index(client: TestClient):
@@ -100,14 +107,54 @@ def test_log_out_page(client: TestClient):
 
 
 def test_get_settings_page(
-                            client: TestClient,
-                            session: Session,
-                           create_user: User,
-                           token: TokenData
-                           ):
+        client: TestClient,
+        session: Session,
+        create_user: User,
+        token: TokenData
+):
     session.add(create_user)
     session.commit()
     response = client.get('/settings')
-    # data = response.json()
     assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+
+def test_get_settings_update_page(
+        token: TokenData,
+        session: Session,
+        create_user: User,
+        client: TestClient
+):
+    session.add(create_user)
+    session.commit()
+    response = client.get('/settings_update')
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+
+def test_update_user(
+        session: Session,
+        create_user: User,
+        client: TestClient
+):
+    session.add(create_user)
+    session.commit()
+    response = client.post(
+        f"/users/{create_user.id}", data={"sympathy": "Marsik"}
+    )
+    assert response.status_code == 200
+    assert '<!doctype html>' in response.text
+
+
+def test_update_user_non_existing(
+        session: Session,
+        create_user: User,
+        client: TestClient
+):
+    session.add(create_user)
+    session.commit()
+    response = client.post(
+        "/users/2", data={"sympathy": "Marsik"}
+    )
+    assert response.status_code == 404
     assert '<!doctype html>' in response.text

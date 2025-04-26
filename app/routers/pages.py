@@ -220,4 +220,3 @@ def update_user(
     return templates.TemplateResponse(request=request, name="notification.html", context={
         "message": redis_client.get('settings_changed')
     })
-

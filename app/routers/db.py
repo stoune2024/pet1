@@ -96,7 +96,7 @@ def create_user(user: Annotated[UserCreate, Form()], session: SessionDep, reques
 
 
 # Работает. Не реализована
-@router.get("/users/", response_model=list[UserPublic])
+@router.get("/users/", response_model=list[User])
 def read_users(
         session: SessionDep,
         offset: int = 0,
@@ -104,10 +104,7 @@ def read_users(
 ):
     """
 Функция получения списка всех пользователей со всеми полями. Функция работает, но пока не реализована на практике.
-    :param session: Сессия
-    :param offset: Отступ
-    :param limit: Лимит
-    :return: Список пользователей без пароля
+В случае реализации параметр response_model следует указать как list[UserPublic] в целях безопасности.
     """
     users = session.exec(select(User).offset(offset).limit(limit)).all()
     return users

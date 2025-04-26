@@ -45,8 +45,10 @@ def test_create_user(client: TestClient):
     response = client.post(
         "/reg/", data={"username": "Deadpond", "password": "qwerty123"}
     )
+    check_response = client.get('/users/')
     assert response.status_code == 200
     assert '<!doctype html>' in response.text
+    assert check_response.json()[0]['username'] == 'Deadpond'
 
 
 def test_create_user_incomplete(client: TestClient):
