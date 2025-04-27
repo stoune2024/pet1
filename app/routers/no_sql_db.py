@@ -3,8 +3,8 @@ from ..config import settings
 
 # Подключение к redis
 redis_client = redis.Redis(
-    host=settings.redis_host,
-    # host=settings.docker_redis_host,
+    # host=settings.redis_host,
+    host=settings.docker_redis_host,
     port=settings.redis_port,
     db=0,
     decode_responses=True,

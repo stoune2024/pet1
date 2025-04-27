@@ -1,0 +1,38 @@
+services:
+  redis:
+    build: ./app/routers
+    image: myredis
+    container_name: myredis
+    volumes:
+      - redis-data:/data
+    networks:
+      - dbnet
+
+  myapp:
+    build: .
+    image: myapp
+    container_name: myapp
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - dbnet
+    ports:
+      - "8000:80"
+    volumes:
+      - appdata:/pet1
+    depends_on:
+      - redis
+
+
+networks:
+  dbnet:
+    driver: bridge
+
+volumes:
+  redis-data:
+  appdata:
+
+# docker run -d --name myredis --network dbnet myredis - запуск redis
+# docker run -d --network dbnet --link myapp:db -p 8080:8080 --name adminer adminer - запуск adminer
+# docker run --name myapp -d --network dbnet -P -v appdata:/pet1 myapp - запуск приложения
