@@ -12,6 +12,8 @@ services:
     volumes:
       - ./app/static_files:/pet1/app/static_files
       - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - myapp
 
   redis:
     build: ./app/routers
@@ -33,7 +35,7 @@ services:
     networks:
       - dbnet
     ports:
-      - "8000:80"
+      - "8000:8000"
     volumes:
       - appdata:/pet1
     depends_on:

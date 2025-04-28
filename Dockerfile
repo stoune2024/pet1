@@ -6,7 +6,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 COPY pytest.ini database.db .env ./
 COPY ./app ./app
-EXPOSE 80
+EXPOSE 8000
 # USER appuser
 VOLUME /pet1
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
