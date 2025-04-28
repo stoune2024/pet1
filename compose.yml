@@ -1,8 +1,23 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-server
+    restart: always
+    networks:
+      - dbnet
+    expose:
+      - 8088
+    ports:
+      - "80:8088"
+    volumes:
+      - ./app/static_files:/pet1/app/static_files
+      - ./nginx:/etc/nginx/conf.d
+
   redis:
     build: ./app/routers
     image: myredis
     container_name: myredis
+    restart: always
     volumes:
       - redis-data:/data
     networks:
