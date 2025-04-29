@@ -35,7 +35,7 @@ services:
     networks:
       - dbnet
     ports:
-      - "8000:8000"
+      - "8000:80"
     volumes:
       - appdata:/pet1
     depends_on:
