@@ -5,10 +5,13 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 COPY pytest.ini database.db .env ./
+RUN chown appuser ./
+RUN chown .appgroup ./
 RUN chown .appgroup database.db
 RUN chown appuser database.db
 COPY ./app ./app
 EXPOSE 8000
 USER appuser
-RUN chmod 766 database.db
+RUN chmod 700 ./
+RUN chmod 700 database.db
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
