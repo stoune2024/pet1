@@ -11,4 +11,4 @@ COPY ./app ./app
 EXPOSE 8000
 USER appuser
 RUN chmod 766 database.db
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers",]

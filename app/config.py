@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     secret_key: str                     # Секретный ключ подписи JWT-токенов
     algorithm: str                      # Алгоритм шифрования подписей JWT-токенов
     access_token_expire_minutes: int    # Время истечения срока годноcи JWT-токена
-    base_url: str                       # Базовый URL приложения
     redis_host: str                     # Хост Redis-сервера
     redis_port: int                     # Порт для подключения к Redis
     redis_password: str                 # Пароль для подключения к Redis

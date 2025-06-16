@@ -171,3 +171,7 @@ cython_debug/
 .pypirc
 /database.db
 /pytest.ini
+
+# Redis
+/app/routers/dump.rdb
+/app/routers/redis.conf

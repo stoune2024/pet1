@@ -52,6 +52,3 @@ async def http_exception_handler(request, exc):
                 "message_404": redis_client.hget('failed_authorization_page', 'message_404')
             }
         )
-
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="127.0.0.1", port=8000)
