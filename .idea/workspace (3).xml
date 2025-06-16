@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3ba92ab3-ff85-4d85-be0a-11be29335219" name="Changes" comment="Проект доработан. Приступил к написанию тестов. Очень долго решал проблемы. Вроде все получилось. Первый тест написан. Остались другие..">
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/pages.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/pages.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;stoune2024&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/stoune2024/pet1.git&quot;,
+    &quot;accountId&quot;: &quot;de43eb36-ad6b-4b13-8f63-8627237902e4&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/app/main.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2rMG3kY85Dpr3xXcMHMry50YEkZ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests for app.routers.test_pages.test_get_index.executor": "Run",
+    "Python tests.Python tests for app.test_pages.test_get_index.executor": "Run",
+    "Python tests.Python tests for test_pages.test_get_index.executor": "Run",
+    "Python.config.executor": "Run",
+    "Python.db.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.pages.executor": "Run",
+    "Python.safety.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Максим/YandexDisk/pycharm_projects/pet1_laptop/app",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app\html_templates" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app\static_files\suc_reg_page" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app\static_files\suc_oauth_page" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app\static_files\reg_page" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\tests" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app" />
+      <recent name="C:\Users\Максим\YandexDisk\pycharm_projects\pet1_laptop\app\tests" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="db" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pet1_laptop" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/routers" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/routers/db.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="safety" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pet1_laptop" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/routers" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/routers/safety.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for app.test_pages.test_get_index" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="pet1_laptop" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;app.test_pages.test_get_index&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_pages.test_get_index" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="pet1_laptop" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_pages.test_get_index&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests for tests.test_pages.test_get_index" />
+        <item itemvalue="Python tests.Python tests for tests.test_pages.test_get_index" />
+        <item itemvalue="Python.safety" />
+        <item itemvalue="Python.db" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-fb887030ada0-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.21565.199" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3ba92ab3-ff85-4d85-be0a-11be29335219" name="Changes" comment="" />
+      <created>1736361334068</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736361334068</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Завершил работу над фронтендом. Можно приступать к разработке бекенд части сайта.">
+      <option name="closed" value="true" />
+      <created>1736788605208</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736788605208</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Начал работу с подключением базы данных. Появилась ошибка при запуске, планирую решить в будушем.">
+      <option name="closed" value="true" />
+      <created>1737049483731</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737049483731</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Написал 4 операции пути (CRUD) при работе с пользователями и БД.">
+      <option name="closed" value="true" />
+      <created>1737463474361</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1737463474361</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Начал внедрение полноценной системы безопасности. Начал писать модуль safety.">
+      <option name="closed" value="true" />
+      <created>1737482729058</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1737482729058</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Написал функции получения пользователя из БД и его аутентификация, также написал функцию получения JWT-токена.">
+      <option name="closed" value="true" />
+      <created>1737561896859</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1737561896859</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Начал работу над доработкой фронтенда путем записи  медиа выражений">
+      <option name="closed" value="true" />
+      <created>1738641938793</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1738641938793</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Работа над фронтендом окончена. Следующий шаг - написание тестов.">
+      <option name="closed" value="true" />
+      <created>1738690327012</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1738690327012</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Написание тестов ненадолго откладывается. Надо доработать проект.">
+      <option name="closed" value="true" />
+      <created>1738939349274</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1738939349274</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Проект доработан. Приступил к написанию тестов. Очень долго решал проблемы. Вроде все получилось. Первый тест написан. Остались другие..">
+      <option name="closed" value="true" />
+      <created>1739379469751</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1739379469751</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Завершил работу над фронтендом. Можно приступать к разработке бекенд части сайта." />
+    <MESSAGE value="Начал работу с подключением базы данных. Появилась ошибка при запуске, планирую решить в будушем." />
+    <MESSAGE value="Написал 4 операции пути (CRUD) при работе с пользователями и БД." />
+    <MESSAGE value="Начал внедрение полноценной системы безопасности. Начал писать модуль safety." />
+    <MESSAGE value="Написал функции получения пользователя из БД и его аутентификация, также написал функцию получения JWT-токена." />
+    <MESSAGE value="Начал работу над доработкой фронтенда путем записи  медиа выражений" />
+    <MESSAGE value="Работа над фронтендом окончена. Следующий шаг - написание тестов." />
+    <MESSAGE value="Написание тестов ненадолго откладывается. Надо доработать проект." />
+    <MESSAGE value="Проект доработан. Приступил к написанию тестов. Очень долго решал проблемы. Вроде все получилось. Первый тест написан. Остались другие.." />
+    <option name="LAST_COMMIT_MESSAGE" value="Проект доработан. Приступил к написанию тестов. Очень долго решал проблемы. Вроде все получилось. Первый тест написан. Остались другие.." />
+  </component>
+</project>
